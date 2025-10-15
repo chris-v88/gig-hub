@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "baseUrl": "./src",
+    "checkJs": false,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "paths": {
+      "@common/*": ["common/*"],
+      "@services/*": ["services/*"],
+      "@controllers/*": ["controllers/*"],
+      "@routers/*": ["routers/*"]
+    }
+  },
+  "exclude": ["node_modules", "tmp", "generated", "coverage"]
+}
