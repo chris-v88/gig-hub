@@ -90,7 +90,7 @@ export const gigService = {
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
 
-    // Build where clause
+    // Init where clause
     const where = {};
     
     // Add text search

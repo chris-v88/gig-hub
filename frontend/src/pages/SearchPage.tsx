@@ -154,7 +154,7 @@ const SearchPage: React.FC = () => {
 
                   {/* Rating */}
                   <div className="flex items-center mb-3">
-                    <div className="flex items-center mr-2">{renderStars()}</div>
+                    <div className="flex items-center mr-2">{renderStars(gig.rating ?? 0)}</div>
                     <span className="text-sm text-gray-600">(New)</span>
                   </div>
 

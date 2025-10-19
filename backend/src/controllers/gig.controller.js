@@ -57,11 +57,9 @@ export const gigController = {
     try {
       console.log('Search request received:', req.query);
       const result = await gigService.search(req);
-      console.log('Search result:', result);
       const response = responseSuccess(result, 'Search gigs successfully', statusCodes.OK);
       res.status(response.statusCode).json(response);
     } catch (error) {
-      console.error('Search error in controller:', error);
       next(error);
     }
   },
