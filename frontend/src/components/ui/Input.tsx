@@ -7,7 +7,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
 };
 
 const Input = (props: InputProps) => {
-  const { label, error, helperText, className = '', id } = props;
+  const { label, error, helperText, className = '', id, ...inputProps } = props;
   const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
   return (
@@ -29,7 +29,7 @@ const Input = (props: InputProps) => {
           }
           ${className}
         `}
-        {...props}
+        {...inputProps}
       />
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
       {helperText && !error && <p className="mt-1 text-sm text-gray-500">{helperText}</p>}

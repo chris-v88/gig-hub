@@ -5,6 +5,16 @@ import { LoginFormData } from '../schemas/form/login.form.schema';
 import { SignupResponse, LoginResponse } from '../schemas/response/auth.response.schema';
 import { useAuthStore } from '../store/authStore';
 
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+      errors?: string[];
+    };
+  };
+  message?: string;
+};
+
 export const useSignup = () => {
   const setAuth = useAuthStore((state) => state.setAuth);
 
@@ -12,11 +22,16 @@ export const useSignup = () => {
     mutationFn: authAPI.signup,
     onSuccess: (data) => {
       if (data.success && data.data?.user) {
-        setAuth(data.data.user);
+        const user = data.data.user;
+        if (user.id && user.name && user.username && user.email && user.role && user.created_at) {
+          setAuth(user);
+        }
       }
     },
-    onError: (error) => {
+    onError: (error: Error & ApiError) => {
       console.error('Signup error:', error);
+      const serverMessage = error.response?.data?.message || error.message;
+      error.message = serverMessage || 'Signup failed. Please try again.';
     },
   });
 };
@@ -28,11 +43,16 @@ export const useLogin = () => {
     mutationFn: authAPI.login,
     onSuccess: (data) => {
       if (data.success && data.data?.user) {
-        setAuth(data.data.user);
+        const user = data.data.user;
+        if (user.id && user.name && user.username && user.email && user.role && user.created_at) {
+          setAuth(user);
+        }
       }
     },
-    onError: (error) => {
+    onError: (error: Error & ApiError) => {
       console.error('Login error:', error);
+      const serverMessage = error.response?.data?.message || error.message;
+      error.message = serverMessage || 'Login failed. Please check your credentials and try again.';
     },
   });
 };
