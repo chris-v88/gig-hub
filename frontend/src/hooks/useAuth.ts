@@ -11,9 +11,8 @@ export const useSignup = () => {
   return useMutation<SignupResponse, Error, Omit<SignupFormData, 'confirmPassword'>>({
     mutationFn: authAPI.signup,
     onSuccess: (data) => {
-      if (data.success && data.data?.user && data.data?.accessToken) {
-        setAuth(data.data.user, data.data.accessToken);
-        localStorage.setItem('accessToken', data.data.accessToken);
+      if (data.success && data.data?.user) {
+        setAuth(data.data.user);
       }
     },
     onError: (error) => {
@@ -28,13 +27,27 @@ export const useLogin = () => {
   return useMutation<LoginResponse, Error, LoginFormData>({
     mutationFn: authAPI.login,
     onSuccess: (data) => {
-      if (data.success && data.data?.user && data.data?.accessToken) {
-        setAuth(data.data.user, data.data.accessToken);
-        localStorage.setItem('accessToken', data.data.accessToken);
+      if (data.success && data.data?.user) {
+        setAuth(data.data.user);
       }
     },
     onError: (error) => {
       console.error('Login error:', error);
+    },
+  });
+};
+
+export const useLogout = () => {
+  const logout = useAuthStore((state) => state.logout);
+
+  return useMutation<{ success: boolean; message: string }, Error, void>({
+    mutationFn: authAPI.logout,
+    onSuccess: () => {
+      logout();
+    },
+    onError: (error) => {
+      console.error('Logout error:', error);
+      logout();
     },
   });
 };

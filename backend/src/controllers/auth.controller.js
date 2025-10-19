@@ -10,23 +10,27 @@ export const authController = {
 
       const tokens = tokenService.generateTokens(newUser.id);
 
-      res.cookie('refreshToken', tokens.refreshToken, {
+      res.cookie('access_token', tokens.accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
-        maxAge: 24 * 60 * 60 * 1000, // 1 day
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      res.cookie('refresh_token', tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000,
       });
 
       const response = responseSuccess(
         {
           user: newUser,
-          accessToken: tokens.accessToken,
         },
         'User registered successfully',
         statusCodes.CREATED,
       );
 
-      // Convert to frontend format
       res.status(response.statusCode).json({
         success: true,
         message: response.message,
@@ -44,17 +48,28 @@ export const authController = {
       const response = responseSuccess(
         {
           user: result.user,
-          accessToken: result.accessToken,
         },
         'Login successful',
         statusCodes.OK,
       );
-
-      // Convert to frontend format
+      
       res.status(response.statusCode).json({
         success: true,
         message: response.message,
         data: response.data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+
+  logout: async (req, res, next) => {
+    try {
+      const result = await authService.logout(req, res);
+
+      res.status(200).json({
+        success: true,
+        message: result.message,
       });
     } catch (error) {
       next(error);

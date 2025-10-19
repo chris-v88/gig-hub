@@ -14,9 +14,8 @@ export type User = {
 
 export type AuthState = {
   user: User | null;
-  accessToken: string | null;
   isAuthenticated: boolean;
-  setAuth: (user: User, accessToken: string) => void;
+  setAuth: (user: User) => void;
   logout: () => void;
   updateUser: (user: Partial<User>) => void;
 };
@@ -25,13 +24,11 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
-      accessToken: null,
       isAuthenticated: false,
 
-      setAuth: (user: User, accessToken: string) => {
+      setAuth: (user: User) => {
         set({
           user,
-          accessToken,
           isAuthenticated: true,
         });
       },
@@ -39,11 +36,8 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         set({
           user: null,
-          accessToken: null,
           isAuthenticated: false,
         });
-        // Clear localStorage
-        localStorage.removeItem('accessToken');
       },
 
       updateUser: (userData: Partial<User>) => {
@@ -59,7 +53,6 @@ export const useAuthStore = create<AuthState>()(
       name: 'auth-storage',
       partialize: (state) => ({
         user: state.user,
-        accessToken: state.accessToken,
         isAuthenticated: state.isAuthenticated,
       }),
     }

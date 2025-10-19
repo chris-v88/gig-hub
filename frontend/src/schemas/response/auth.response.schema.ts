@@ -15,7 +15,6 @@ export const signupResponseSchema = z.object({
         profile_image: z.string().nullable(),
         created_at: z.string(),
       }),
-      accessToken: z.string(),
     })
     .optional(),
   errors: z.array(z.string()).optional(),
@@ -44,7 +43,6 @@ export const loginResponseSchema = z.object({
         profile_image: z.string().nullable(),
         created_at: z.string(),
       }),
-      accessToken: z.string(),
     })
     .optional(),
   errors: z.array(z.string()).optional(),
