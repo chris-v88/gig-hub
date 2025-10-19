@@ -1,0 +1,24 @@
+import 'dotenv/config';
+
+export const DATABASE_URL = process.env.DATABASE_URL;
+
+export const ACCESS_TOKEN_KEY = process.env.ACCESS_TOKEN_KEY;
+export const ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN;
+
+export const ACCESS_REFRESH_SECRET = process.env.ACCESS_REFRESH_SECRET;
+export const ACCESS_REFRESH_EXPIRES_IN = process.env.ACCESS_REFRESH_EXPIRES_IN;
+
+export const CLOUDINARY_NAME = process.env.CLOUDINARY_NAME;
+export const CLOUD_API_KEY = process.env.CLOUDINARY_API_KEY;
+export const CLOUD_API_SECRET = process.env.CLOUDINARY_API_SECRET;
+
+console.log(
+  `DATABASE_URL:\t\t ${DATABASE_URL}\n` +
+    `ACCESS_TOKEN_KEY:\t\t ${ACCESS_TOKEN_KEY}\n` +
+    `ACCESS_TOKEN_EXPIRES_IN:\t\t ${ACCESS_TOKEN_EXPIRES_IN}\n` +
+    `ACCESS_REFRESH_SECRET:\t\t ${ACCESS_REFRESH_SECRET}\n` +
+    `ACCESS_REFRESH_EXPIRES_IN:\t\t ${ACCESS_REFRESH_EXPIRES_IN}\n` +
+    `CLOUDINARY_NAME:\t\t ${CLOUDINARY_NAME}\n` +
+    `CLOUD_API_KEY:\t\t ${CLOUD_API_KEY}\n` +
+    `CLOUD_API_SECRET:\t\t ${CLOUD_API_SECRET}\n`,
+);
