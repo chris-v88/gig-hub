@@ -29,12 +29,6 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'GigHub API is running!' });
 });
 
-app.use((err, req, res, next) => {
-  console.error('Error in middleware:', err);
-  const resData = responseError(err, err?.message, err?.code, err?.stack);
-  res.status(resData.statusCode).json(resData);
-});
-
 // Error handling middleware (must be last)
 app.use(appError);
 

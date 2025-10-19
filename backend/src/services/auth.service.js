@@ -61,7 +61,7 @@ export const authService = {
     }
 
     // Hash password
-    const passwordHash = bcrypt.hashSync(sanitizedData.password, 12);
+    const passwordHash = await bcrypt.hash(sanitizedData.password, 12);
     
     // Create user
     const newUser = await prisma.users.create({
@@ -107,7 +107,7 @@ export const authService = {
       throw new BadRequestException('Password does not exist');
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new BadRequestException('Incorrect password');
     }
