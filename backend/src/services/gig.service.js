@@ -24,9 +24,9 @@ export const gigService = {
             name: true,
           },
         },
-        Reviews: {
+        _count: {
           select: {
-            rating: true,
+            Reviews: true,
           },
         },
       },
@@ -35,21 +35,14 @@ export const gigService = {
       },
     });
 
-    // Calculate actual ratings from reviews
+    // Use existing average_rating and total_reviews from database
     const gigsWithRatings = gigs.map(gig => {
-      const reviews = gig.Reviews || [];
-      const totalReviews = reviews.length;
-      const averageRating = totalReviews > 0 
-        ? parseFloat((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1))
-        : parseFloat(gig.average_rating || '0.0');
-      
+      const { Users, _count, ...gigData } = gig;
       return {
-        ...gig,
-        user: gig.Users, // Map Users relation to user for frontend compatibility
-        Users: undefined, // Remove original relation
-        Reviews: undefined, // Remove Reviews from response
-        average_rating: averageRating,
-        total_reviews: totalReviews > 0 ? totalReviews : (gig.total_reviews || 0),
+        ...gigData,
+        user: Users, // Map Users relation to user for frontend compatibility
+        average_rating: parseFloat(gig.average_rating || '0.0'),
+        total_reviews: _count.Reviews || gig.total_reviews || 0,
       };
     });
 
@@ -114,18 +107,17 @@ export const gigService = {
       throw new BadRequestException('Gig not found');
     }
 
-    // Calculate actual ratings from reviews
+    // Use existing ratings from database for performance
     const reviews = gig.Reviews || [];
     const totalReviews = reviews.length;
-    const averageRating = totalReviews > 0 
-      ? parseFloat((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1))
-      : parseFloat(gig.average_rating || '0.0');
+    const averageRating = parseFloat(gig.average_rating || '0.0');
 
     // Map Users relation to user for frontend compatibility
+    const { Users, images_rel, Reviews: reviewsData, ...gigData } = gig;
     return {
-      ...gig,
-      user: gig.Users,
-      images: gig.images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean),
+      ...gigData,
+      user: Users,
+      images: images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean),
       reviews: reviews.map(review => ({
         id: review.id,
         rating: review.rating,
@@ -139,9 +131,6 @@ export const gigService = {
       })),
       average_rating: averageRating,
       total_reviews: totalReviews > 0 ? totalReviews : (gig.total_reviews || 0),
-      Users: undefined,
-      images_rel: undefined,
-      Reviews: undefined,
     };
   },
 
@@ -346,7 +335,7 @@ export const gigService = {
         where,
       });
 
-      // Get gigs with pagination and reviews for rating calculation
+      // Get gigs with pagination using optimized query
       const gigs = await prisma.gigs.findMany({
         where,
         include: {
@@ -369,9 +358,9 @@ export const gigService = {
               image_url: true,
             },
           },
-          Reviews: {
+          _count: {
             select: {
-              rating: true,
+              Reviews: true,
             },
           },
         },
@@ -380,25 +369,19 @@ export const gigService = {
         take: limitNum,
       });
 
-      // Calculate actual ratings from reviews
+      // Use existing ratings from database instead of calculating
       const gigsWithRatings = gigs.map(gig => {
-        const reviews = gig.Reviews || [];
-        const totalReviews = reviews.length;
-        const averageRating = totalReviews > 0 
-          ? parseFloat((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1))
-          : parseFloat(gig.average_rating || '0.0');
-        
-        return {
-          ...gig,
+        const { Users, images_rel, _count, ...gigData } = gig;
+        const result = {
+          ...gigData,
           starting_price: gig.price, // Map price to starting_price for frontend compatibility
-          user: gig.Users, // Map Users relation to user
-          images: gig.images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean), // Map images
-          Users: undefined, // Remove original relation
-          images_rel: undefined, // Remove original relation
-          Reviews: undefined, // Remove Reviews from response
-          average_rating: averageRating,
-          total_reviews: totalReviews > 0 ? totalReviews : (gig.total_reviews || 0),
+          user: Users, // Map Users relation to user
+          images: images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean), // Map images
+          average_rating: parseFloat(gig.average_rating || '0.0'),
+          total_reviews: _count.Reviews || gig.total_reviews || 0,
         };
+        
+        return result;
       });
 
       const totalPages = Math.ceil(total / limitNum);

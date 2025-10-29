@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import SearchPage from './pages/SearchPage';
+import GigPage from './pages/GigPage';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -23,10 +24,10 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/gig/:id" element={<GigPage />} />
             {/* TODO: Add more routes */}
             {/* 
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/gigs/:id" element={<GigPage />} />
             <Route path="/categories/:category" element={<CategoryPage />} />
             */}
           </Routes>
