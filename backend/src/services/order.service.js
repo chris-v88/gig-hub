@@ -81,7 +81,7 @@ export const orderService = {
         revisions_included: gig.revisions || 0,
         status: 'pending',
         completed: hoanThanh || false,
-        order_date: ngayThue ? new Date(ngayThue) : new Date(),
+        hire_date: ngayThue ? new Date(ngayThue) : new Date(),
         completed_at: hoanThanh ? new Date() : null,
       },
       include: {
@@ -239,7 +239,7 @@ export const orderService = {
   // PUT /api/thue-cong-viec/:id
   update: async (req) => {
     const { id } = req.params;
-    const { maCongViec, maNguoiThue, ngayThue, hoanThanh } = req.body;
+    const { ngayThue, hoanThanh, status } = req.body;
 
     const order = await prisma.orders.findUnique({
       where: { id: parseInt(id) },
@@ -249,12 +249,21 @@ export const orderService = {
       throw new BadRequestException('Order not found');
     }
 
+    // Fix inconsistent completed_at logic: clear timestamp when uncompleting
+    let completedAt;
+    if (hoanThanh !== undefined) {
+      completedAt = hoanThanh ? new Date() : null;
+    } else {
+      completedAt = order.completed_at;
+    }
+
     const updatedOrder = await prisma.orders.update({
       where: { id: parseInt(id) },
       data: {
         completed: hoanThanh !== undefined ? hoanThanh : order.completed,
-        completed_at: hoanThanh ? new Date() : order.completed_at,
-        order_date: ngayThue ? new Date(ngayThue) : order.order_date,
+        completed_at: completedAt,
+        hire_date: ngayThue ? new Date(ngayThue) : order.hire_date, // Fixed field name
+        status: status || order.status,
       },
       include: {
         gig: {

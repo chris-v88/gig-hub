@@ -4,7 +4,7 @@ import { BadRequestException } from '../common/helpers/exception.helper.js';
 export const skillService = {
   // GET /api/skill
   findAll: async (req) => {
-    const skills = await prisma.skills.findMany({
+    const skills = await prisma.Skills.findMany({
       include: {
         UserSkills: {
           include: {
@@ -40,7 +40,7 @@ export const skillService = {
     }
 
     // Check if skill already exists
-    const existingSkill = await prisma.skills.findFirst({
+    const existingSkill = await prisma.Skills.findFirst({
       where: {
         name: tenSkill,
       },
@@ -50,7 +50,7 @@ export const skillService = {
       throw new BadRequestException('Skill with this name already exists');
     }
 
-    const skill = await prisma.skills.create({
+    const skill = await prisma.Skills.create({
       data: {
         name: tenSkill,
         description: moTa || '',
@@ -83,7 +83,7 @@ export const skillService = {
     } : {};
 
     const [skills, total] = await Promise.all([
-      prisma.skills.findMany({
+      prisma.Skills.findMany({
         where,
         skip,
         take: limit,
@@ -98,7 +98,7 @@ export const skillService = {
           name: 'asc',
         },
       }),
-      prisma.skills.count({ where }),
+      prisma.Skills.count({ where }),
     ]);
 
     return {
@@ -114,7 +114,7 @@ export const skillService = {
   findOne: async (req) => {
     const { id } = req.params;
 
-    const skill = await prisma.skills.findUnique({
+    const skill = await prisma.Skills.findUnique({
       where: { id: parseInt(id) },
       include: {
         UserSkills: {
@@ -149,7 +149,7 @@ export const skillService = {
     const { id } = req.params;
     const { tenSkill, moTa } = req.body;
 
-    const skill = await prisma.skills.findUnique({
+    const skill = await prisma.Skills.findUnique({
       where: { id: parseInt(id) },
     });
 
@@ -159,7 +159,7 @@ export const skillService = {
 
     // Check if new name conflicts with existing skills
     if (tenSkill && tenSkill !== skill.name) {
-      const existingSkill = await prisma.skills.findFirst({
+      const existingSkill = await prisma.Skills.findFirst({
         where: {
           name: tenSkill,
           id: {
@@ -173,7 +173,7 @@ export const skillService = {
       }
     }
 
-    const updatedSkill = await prisma.skills.update({
+    const updatedSkill = await prisma.Skills.update({
       where: { id: parseInt(id) },
       data: {
         name: tenSkill || skill.name,
@@ -195,7 +195,7 @@ export const skillService = {
   remove: async (req) => {
     const { id } = req.params;
 
-    const skill = await prisma.skills.findUnique({
+    const skill = await prisma.Skills.findUnique({
       where: { id: parseInt(id) },
       include: {
         _count: {
@@ -215,7 +215,7 @@ export const skillService = {
       throw new BadRequestException('Cannot delete skill that is assigned to users');
     }
 
-    await prisma.skills.delete({
+    await prisma.Skills.delete({
       where: { id: parseInt(id) },
     });
 

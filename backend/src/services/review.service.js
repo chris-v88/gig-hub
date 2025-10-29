@@ -1,5 +1,6 @@
 import prisma from '../common/prisma/init.prisma.js';
-import { BadRequestException, UnauthorizedException } from '../common/helpers/exception.helper.js';
+import { BadRequestException } from '../common/helpers/exception.helper.js';
+import { updateGigRating } from '../common/helpers/gig.helper.js';
 
 export const reviewService = {
   // GET /api/binh-luan
@@ -21,7 +22,7 @@ export const reviewService = {
             username: true,
           },
         },
-        gig: {
+        Gigs: {
           select: {
             id: true,
             title: true,
@@ -111,26 +112,7 @@ export const reviewService = {
     });
 
     // Update gig's average rating
-    const allReviews = await prisma.reviews.findMany({
-      where: { 
-        gig_id: parseInt(maCongViec),
-        is_public: true,
-      },
-      select: { rating: true },
-    });
-
-    const totalReviews = allReviews.length;
-    const averageRating = totalReviews > 0 
-      ? parseFloat((allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(2))
-      : 0;
-
-    await prisma.gigs.update({
-      where: { id: parseInt(maCongViec) },
-      data: {
-        average_rating: averageRating,
-        total_reviews: totalReviews,
-      },
-    });
+    await updateGigRating(parseInt(maCongViec));
 
     return review;
   },
@@ -167,26 +149,7 @@ export const reviewService = {
     });
 
     // Recalculate gig's average rating
-    const allReviews = await prisma.reviews.findMany({
-      where: { 
-        gig_id: review.gig_id,
-        is_public: true,
-      },
-      select: { rating: true },
-    });
-
-    const totalReviews = allReviews.length;
-    const averageRating = totalReviews > 0 
-      ? parseFloat((allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(2))
-      : 0;
-
-    await prisma.gigs.update({
-      where: { id: review.gig_id },
-      data: {
-        average_rating: averageRating,
-        total_reviews: totalReviews,
-      },
-    });
+    await updateGigRating(review.gig_id);
 
     return updatedReview;
   },
@@ -208,26 +171,7 @@ export const reviewService = {
     });
 
     // Recalculate gig's average rating
-    const allReviews = await prisma.reviews.findMany({
-      where: { 
-        gig_id: review.gig_id,
-        is_public: true,
-      },
-      select: { rating: true },
-    });
-
-    const totalReviews = allReviews.length;
-    const averageRating = totalReviews > 0 
-      ? parseFloat((allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(2))
-      : 0;
-
-    await prisma.gigs.update({
-      where: { id: review.gig_id },
-      data: {
-        average_rating: averageRating,
-        total_reviews: totalReviews,
-      },
-    });
+    await updateGigRating(review.gig_id);
 
     return { message: 'Review deleted successfully' };
   },

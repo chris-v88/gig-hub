@@ -4,17 +4,23 @@ import { protect } from '../common/middlewares/protect.middleware.js';
 
 const gigRouter = express.Router();
 
-// Create route CRUD
+// Protected routes (require authentication) 
 gigRouter.post('/', protect, gigController.create);
-gigRouter.get('/', gigController.findAll);
+
+// Public specific routes (must come before /:id to prevent conflicts)
 gigRouter.get('/search', gigController.search);
 gigRouter.get('/search-pagination', gigController.searchPagination);
 gigRouter.get('/categories-menu', gigController.getJobTypeMenu);
 gigRouter.get('/category-details/:categoryId', gigController.getJobTypeDetails);
 gigRouter.get('/by-subcategory/:subcategoryId', gigController.getGigsBySubcategory);
-gigRouter.get('/details/:gigId', gigController.getGigDetails);
+gigRouter.get('/gig-details/:gigId', gigController.getGigDetails); // Renamed to avoid conflict
 gigRouter.get('/by-name/:gigName', gigController.getGigsByName);
+
+// General routes (must come after specific routes)
+gigRouter.get('/', gigController.findAll);
 gigRouter.get('/:id', gigController.findOne);
+
+// Protected routes (require authentication)
 gigRouter.put('/:id', protect, gigController.update);
 gigRouter.delete('/:id', protect, gigController.remove);
 

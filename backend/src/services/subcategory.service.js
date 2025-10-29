@@ -4,9 +4,9 @@ import { BadRequestException } from '../common/helpers/exception.helper.js';
 export const subcategoryService = {
   // GET /api/chi-tiet-loai-cong-viec
   findAll: async (req) => {
-    const subcategories = await prisma.subcategories.findMany({
+    const subcategories = await prisma.Subcategories.findMany({
       include: {
-        category: {
+        Categories: {
           select: {
             id: true,
             name: true,
@@ -29,7 +29,7 @@ export const subcategoryService = {
       throw new BadRequestException('Subcategory name is required');
     }
 
-    const subcategory = await prisma.subcategories.create({
+    const subcategory = await prisma.Subcategories.create({
       data: {
         name: tenChiTiet,
       },
@@ -52,12 +52,12 @@ export const subcategoryService = {
     } : {};
 
     const [subcategories, total] = await Promise.all([
-      prisma.subcategories.findMany({
+      prisma.Subcategories.findMany({
         where,
         skip,
         take: limit,
         include: {
-          category: {
+          Categories: {
             select: {
               id: true,
               name: true,
@@ -68,7 +68,7 @@ export const subcategoryService = {
           name: 'asc',
         },
       }),
-      prisma.subcategories.count({ where }),
+      prisma.Subcategories.count({ where }),
     ]);
 
     return {
@@ -84,10 +84,10 @@ export const subcategoryService = {
   findOne: async (req) => {
     const { id } = req.params;
 
-    const subcategory = await prisma.subcategories.findUnique({
+    const subcategory = await prisma.Subcategories.findUnique({
       where: { id: parseInt(id) },
       include: {
-        category: {
+        Categories: {
           select: {
             id: true,
             name: true,
@@ -112,7 +112,7 @@ export const subcategoryService = {
       throw new BadRequestException('Subcategory name is required');
     }
 
-    const subcategory = await prisma.subcategories.findUnique({
+    const subcategory = await prisma.Subcategories.findUnique({
       where: { id: parseInt(id) },
     });
 
@@ -120,7 +120,7 @@ export const subcategoryService = {
       throw new BadRequestException('Subcategory not found');
     }
 
-    const updatedSubcategory = await prisma.subcategories.update({
+    const updatedSubcategory = await prisma.Subcategories.update({
       where: { id: parseInt(id) },
       data: {
         name: tenChiTiet,
@@ -134,7 +134,7 @@ export const subcategoryService = {
   remove: async (req) => {
     const { id } = req.params;
 
-    const subcategory = await prisma.subcategories.findUnique({
+    const subcategory = await prisma.Subcategories.findUnique({
       where: { id: parseInt(id) },
     });
 
@@ -142,7 +142,7 @@ export const subcategoryService = {
       throw new BadRequestException('Subcategory not found');
     }
 
-    await prisma.subcategories.delete({
+    await prisma.Subcategories.delete({
       where: { id: parseInt(id) },
     });
 
@@ -158,7 +158,7 @@ export const subcategoryService = {
     }
 
     // Create main subcategory
-    const mainSubcategory = await prisma.subcategories.create({
+    const mainSubcategory = await prisma.Subcategories.create({
       data: {
         name: tenChiTiet,
         category_id: parseInt(maLoaiCongViec),
@@ -169,7 +169,7 @@ export const subcategoryService = {
     if (danhSachChiTiet && Array.isArray(danhSachChiTiet)) {
       const childSubcategories = await Promise.all(
         danhSachChiTiet.map(childId =>
-          prisma.subcategories.update({
+          prisma.Subcategories.update({
             where: { id: parseInt(childId) },
             data: {
               category_id: parseInt(maLoaiCongViec),
@@ -192,7 +192,7 @@ export const subcategoryService = {
     const { id } = req.params;
     const { tenChiTiet, maLoaiCongViec, danhSachChiTiet } = req.body;
 
-    const subcategory = await prisma.subcategories.findUnique({
+    const subcategory = await prisma.Subcategories.findUnique({
       where: { id: parseInt(id) },
     });
 
@@ -201,7 +201,7 @@ export const subcategoryService = {
     }
 
     // Update main subcategory
-    const updatedSubcategory = await prisma.subcategories.update({
+    const updatedSubcategory = await prisma.Subcategories.update({
       where: { id: parseInt(id) },
       data: {
         name: tenChiTiet,
@@ -213,7 +213,7 @@ export const subcategoryService = {
     if (danhSachChiTiet && Array.isArray(danhSachChiTiet)) {
       const childSubcategories = await Promise.all(
         danhSachChiTiet.map(childId =>
-          prisma.subcategories.update({
+          prisma.Subcategories.update({
             where: { id: parseInt(childId) },
             data: {
               category_id: maLoaiCongViec ? parseInt(maLoaiCongViec) : subcategory.category_id,
