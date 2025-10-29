@@ -93,11 +93,11 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  to="/orders"
+                  to="/my-orders"
                   className="hidden sm:flex items-center text-gray-700 hover:text-green-600 transition-colors"
                 >
                   <Icon name="ShoppingBag" size={20} />
-                  <span className="ml-2">Orders</span>
+                  <span className="ml-2">My Orders</span>
                 </Link>
 
                 {/* User Menu */}
@@ -148,6 +148,33 @@ const Navbar = () => {
                         <Icon name="Settings" size={16} className="inline mr-2" />
                         Settings
                       </Link>
+
+                      {/* Admin Menu - Only show if user is admin */}
+                      {user?.role === 'admin' && (
+                        <>
+                          <hr className="my-1" />
+                          <div className="px-4 py-2">
+                            <p className="text-xs font-semibold text-gray-500 uppercase">Admin</p>
+                          </div>
+                          <Link
+                            to="/admin/categories"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon name="Tags" size={16} className="inline mr-2" />
+                            Categories
+                          </Link>
+                          <Link
+                            to="/admin/orders"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Icon name="Package" size={16} className="inline mr-2" />
+                            All Orders
+                          </Link>
+                        </>
+                      )}
+
                       <hr className="my-1" />
                       <button
                         onClick={handleLogout}

@@ -7,6 +7,10 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import SearchPage from './pages/SearchPage';
 import GigPage from './pages/GigPage';
+import CategoryListPage from './pages/CategoryListPage';
+import OrderListPage from './pages/OrderListPage';
+import MyOrdersPage from './pages/MyOrdersPage';
+import SkillsListPage from './pages/SkillsListPage';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -23,10 +27,21 @@ function App() {
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/gig/:id" element={<GigPage />} />
+
+            {/* Admin/Management Routes */}
+            <Route path="/admin/categories" element={<CategoryListPage />} />
+            <Route path="/admin/orders" element={<OrderListPage />} />
+            <Route path="/admin/skills" element={<SkillsListPage />} />
+
+            {/* User Routes */}
+            <Route path="/my-orders" element={<MyOrdersPage />} />
+
             {/* TODO: Add more routes */}
             {/* 
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/categories/:category" element={<CategoryPage />} />
+            <Route path="/admin/users" element={<UserListPage />} />
+            <Route path="/admin/subcategories" element={<SubcategoryListPage />} />
             */}
           </Routes>
         </div>
