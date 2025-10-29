@@ -8,7 +8,7 @@
     "dev": "nodemon --import=extensionless/register server.js",
     "start": "node --import=extensionless/register server.js",
     "prisma": "npx prisma db pull && npx prisma generate",
-    "sequelize-auto": "npx sequelize-auto -h localhost -d gig_hub -u root -x password1234 -p 3307 --dialect mysql -o ./src/models/sequelize-auto",
+    "sequelize-auto": "npx sequelize-auto -h \"${DB_HOST:-localhost}\" -d \"${DB_NAME:-gig_hub}\" -u \"${DB_USER:-root}\" -x \"${DB_PASS:-password1234}\" -p \"${DB_PORT:-3307}\" --dialect mysql -o ./src/models/sequelize-auto",
     "update-models": "npm run prisma && npm run sequelize-auto",
     "lint": "eslint src --ext .js,.ts",
     "lint:fix": "eslint src --ext .js,.ts --fix",

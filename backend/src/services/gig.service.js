@@ -1,5 +1,5 @@
 import prisma from '../common/prisma/init.prisma.js';
-import { BadRequestException } from '../common/helpers/exception.helper.js';
+import { BadRequestException, UnauthorizedException } from '../common/helpers/exception.helper.js';
 
 export const gigService = {
   create: async (req) => {
@@ -24,9 +24,9 @@ export const gigService = {
             name: true,
           },
         },
-        Reviews: {
+        _count: {
           select: {
-            rating: true,
+            Reviews: true,
           },
         },
       },
@@ -35,21 +35,14 @@ export const gigService = {
       },
     });
 
-    // Calculate actual ratings from reviews
+    // Use existing average_rating and total_reviews from database
     const gigsWithRatings = gigs.map(gig => {
-      const reviews = gig.Reviews || [];
-      const totalReviews = reviews.length;
-      const averageRating = totalReviews > 0 
-        ? parseFloat((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1))
-        : parseFloat(gig.average_rating || '0.0');
-      
+      const { Users, _count, ...gigData } = gig;
       return {
-        ...gig,
-        user: gig.Users, // Map Users relation to user for frontend compatibility
-        Users: undefined, // Remove original relation
-        Reviews: undefined, // Remove Reviews from response
-        average_rating: averageRating,
-        total_reviews: totalReviews > 0 ? totalReviews : (gig.total_reviews || 0),
+        ...gigData,
+        user: Users, // Map Users relation to user for frontend compatibility
+        average_rating: parseFloat(gig.average_rating || '0.0'),
+        total_reviews: _count.Reviews || gig.total_reviews || 0,
       };
     });
 
@@ -88,6 +81,25 @@ export const gigService = {
             image_url: true,
           },
         },
+        Reviews: {
+          where: {
+            is_public: true,
+          },
+          include: {
+            reviewer: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile_image: true,
+              },
+            },
+          },
+          orderBy: {
+            created_at: 'desc',
+          },
+          take: 50, // Limit to recent 50 reviews
+        },
       },
     });
 
@@ -95,11 +107,30 @@ export const gigService = {
       throw new BadRequestException('Gig not found');
     }
 
+    // Use existing ratings from database for performance
+    const reviews = gig.Reviews || [];
+    const totalReviews = reviews.length;
+    const averageRating = parseFloat(gig.average_rating || '0.0');
+
     // Map Users relation to user for frontend compatibility
+    const { Users, images_rel, Reviews: reviewsData, ...gigData } = gig;
     return {
-      ...gig,
-      user: gig.Users,
-      Users: undefined,
+      ...gigData,
+      user: Users,
+      images: images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean),
+      reviews: reviews.map(review => ({
+        id: review.id,
+        rating: review.rating,
+        title: review.title,
+        content: review.content,
+        communication_rating: review.communication_rating,
+        service_quality_rating: review.service_quality_rating,
+        delivery_time_rating: review.delivery_time_rating,
+        review_date: review.review_date,
+        user: review.reviewer,
+      })),
+      average_rating: averageRating,
+      total_reviews: totalReviews > 0 ? totalReviews : (gig.total_reviews || 0),
     };
   },
 
@@ -109,6 +140,139 @@ export const gigService = {
 
   remove: async (req) => {
     return `This action removes gig #${req.params.id}`;
+  },
+
+  createReview: async (req) => {
+    const { id } = req.params;
+    const { 
+      rating, 
+      title, 
+      content, 
+      communication_rating, 
+      service_quality_rating, 
+      delivery_time_rating 
+    } = req.body;
+    
+    // Get user from auth middleware (assuming it's available)
+    const reviewer_id = req.user?.id;
+    if (!reviewer_id) {
+      throw new UnauthorizedException('User not authenticated');
+    }
+
+    // Check if gig exists and get seller info
+    const gig = await prisma.gigs.findUnique({
+      where: { id: parseInt(id) },
+      select: { 
+        id: true, 
+        title: true,
+        price: true,
+        delivery_time: true,
+        revisions: true,
+        seller_id: true,
+        Users: {
+          select: { id: true }
+        }
+      },
+    });
+
+    if (!gig) {
+      throw new BadRequestException('Gig not found');
+    }
+
+    // Check if user is trying to review their own gig
+    if (gig.seller_id === reviewer_id) {
+      throw new BadRequestException('You cannot review your own gig');
+    }
+
+    // Find or create an order for this review
+    let order = await prisma.orders.findFirst({
+      where: {
+        gig_id: parseInt(id),
+        buyer_id: reviewer_id,
+        seller_id: gig.seller_id,
+      },
+    });
+
+    // If no order exists, create a basic one
+    if (!order) {
+      order = await prisma.orders.create({
+        data: {
+          gig_id: parseInt(id),
+          seller_id: gig.seller_id,
+          buyer_id: reviewer_id,
+          title: `Order for: ${gig.title}`,
+          description: 'Order created for review submission',
+          price: parseFloat(gig.price),
+          delivery_time: gig.delivery_time,
+          revisions_included: gig.revisions || 0,
+          status: 'completed',
+          completed: true,
+          completed_at: new Date(),
+        },
+      });
+    }
+
+    // Create review
+    const review = await prisma.reviews.create({
+      data: {
+        order_id: order.id,
+        gig_id: parseInt(id),
+        reviewer_id,
+        reviewee_id: gig.seller_id,
+        reviewer_role: 'buyer',
+        reviewee_role: 'seller',
+        rating: parseInt(rating),
+        title: title || null,
+        content,
+        communication_rating: communication_rating ? parseInt(communication_rating) : null,
+        service_quality_rating: service_quality_rating ? parseInt(service_quality_rating) : null,
+        delivery_time_rating: delivery_time_rating ? parseInt(delivery_time_rating) : null,
+      },
+      include: {
+        reviewer: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile_image: true,
+          },
+        },
+      },
+    });
+
+    // Update gig's average rating and total reviews
+    const allReviews = await prisma.reviews.findMany({
+      where: { 
+        gig_id: parseInt(id),
+        is_public: true,
+      },
+      select: { rating: true },
+    });
+
+    const totalReviews = allReviews.length;
+    const averageRating = totalReviews > 0 
+      ? parseFloat((allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(2))
+      : 0;
+
+    await prisma.gigs.update({
+      where: { id: parseInt(id) },
+      data: {
+        average_rating: averageRating,
+        total_reviews: totalReviews,
+      },
+    });
+
+    return {
+      id: review.id,
+      rating: review.rating,
+      title: review.title,
+      content: review.content,
+      communication_rating: review.communication_rating,
+      service_quality_rating: review.service_quality_rating,
+      delivery_time_rating: review.delivery_time_rating,
+      review_date: review.review_date,
+      user: review.reviewer,
+    };
   },
 
   search: async (req) => {
@@ -175,7 +339,7 @@ export const gigService = {
         where,
       });
 
-      // Get gigs with pagination and reviews for rating calculation
+      // Get gigs with pagination using optimized query
       const gigs = await prisma.gigs.findMany({
         where,
         include: {
@@ -198,9 +362,9 @@ export const gigService = {
               image_url: true,
             },
           },
-          Reviews: {
+          _count: {
             select: {
-              rating: true,
+              Reviews: true,
             },
           },
         },
@@ -209,25 +373,19 @@ export const gigService = {
         take: limitNum,
       });
 
-      // Calculate actual ratings from reviews
+      // Use existing ratings from database instead of calculating
       const gigsWithRatings = gigs.map(gig => {
-        const reviews = gig.Reviews || [];
-        const totalReviews = reviews.length;
-        const averageRating = totalReviews > 0 
-          ? parseFloat((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1))
-          : parseFloat(gig.average_rating || '0.0');
-        
-        return {
-          ...gig,
+        const { Users, images_rel, _count, ...gigData } = gig;
+        const result = {
+          ...gigData,
           starting_price: gig.price, // Map price to starting_price for frontend compatibility
-          user: gig.Users, // Map Users relation to user
-          images: gig.images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean), // Map images
-          Users: undefined, // Remove original relation
-          images_rel: undefined, // Remove original relation
-          Reviews: undefined, // Remove Reviews from response
-          average_rating: averageRating,
-          total_reviews: totalReviews > 0 ? totalReviews : (gig.total_reviews || 0),
+          user: Users, // Map Users relation to user
+          images: images_rel?.map(img => img.image_url) || [gig.image_url].filter(Boolean), // Map images
+          average_rating: parseFloat(gig.average_rating || '0.0'),
+          total_reviews: _count.Reviews || gig.total_reviews || 0,
         };
+        
+        return result;
       });
 
       const totalPages = Math.ceil(total / limitNum);

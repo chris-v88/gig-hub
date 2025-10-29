@@ -9,7 +9,7 @@ import Icon from '../components/ui/Icon';
 import { loginFormSchema, type LoginFormData } from '../schemas/form/login.form.schema';
 import { useLogin } from '../hooks/useAuth';
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const loginMutation = useLogin();
 

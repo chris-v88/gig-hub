@@ -18,7 +18,7 @@ const categories = [
   'Photography',
 ];
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const { user, isAuthenticated } = useAuth();
   const logoutMutation = useLogout();
   const navigate = useNavigate();

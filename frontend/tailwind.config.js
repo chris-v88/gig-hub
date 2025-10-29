@@ -27,6 +27,13 @@ module.exports = {
         '.break-inside-avoid': {
           breakInside: 'avoid',
         },
+        '.scrollbar-hide': {
+          /* Hide scrollbar for Chrome, Safari and Opera */
+          '-webkit-scrollbar': 'none',
+          /* Hide scrollbar for IE, Edge and Firefox */
+          '-ms-overflow-style': 'none',
+          'scrollbar-width': 'none',
+        },
       },
     },
   },
