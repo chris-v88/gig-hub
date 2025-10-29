@@ -18,7 +18,7 @@ gigRouter.get('/by-name/:gigName', gigController.getGigsByName);
 
 // General routes (must come after specific routes)
 gigRouter.get('/', gigController.findAll);
-gigRouter.get('/:id', gigController.findOne);
+gigRouter.get('/:id(\\d+)', gigController.findOne); // Only match numeric IDs
 
 // Protected routes (require authentication)
 gigRouter.put('/:id', protect, gigController.update);
