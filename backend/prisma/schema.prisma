@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,206 +8,249 @@ datasource db {
 }
 
 model Users {
-  id                      Int      @id @default(autoincrement())
-  name                    String   @db.VarChar(100)
-  email                   String   @unique @db.VarChar(255)
-  password                String   @db.VarChar(255)
-  role                    String   @default("user") @db.VarChar(20)
-  username                String?  @unique @db.VarChar(50)
-  profile_image           String?  @db.VarChar(500)
-  description             String?  @db.Text
-  country                 String?  @db.VarChar(100)
-  is_online               Boolean  @default(false)
-  total_orders_completed  Int      @default(0)
-  created_at              DateTime @default(now())
-  updated_at              DateTime @default(now()) @updatedAt
-
-  // Relations
-  skills                  User_skills[]
-  languages               User_languages[]
-  gigs                    Gigs[]
-  buyer_orders            Orders[] @relation("BuyerOrders")
-  seller_orders           Orders[] @relation("SellerOrders")
-  sent_messages           Chat_messages[]
-  participant1_convos     Conversation[] @relation("Participant1")
-  participant2_convos     Conversation[] @relation("Participant2")
-  given_reviews           Reviews[] @relation("ReviewGiver")
-  received_reviews        Reviews[] @relation("ReviewReceiver")
-  revision_requests       Order_revisions[]
+  id                               Int                   @id @default(autoincrement())
+  name                             String                @db.VarChar(100)
+  email                            String                @unique(map: "email") @db.VarChar(255)
+  password                         String                @db.VarChar(255)
+  phone                            String?               @db.VarChar(20)
+  birthday                         DateTime?             @db.Date
+  gender                           Boolean?
+  role                             String?               @default("user") @db.VarChar(20)
+  username                         String?               @unique(map: "username") @db.VarChar(50)
+  profile_image                    String?               @db.VarChar(500)
+  description                      String?               @db.Text
+  country                          String?               @db.VarChar(100)
+  is_online                        Boolean?              @default(false)
+  total_orders_completed           Int?                  @default(0)
+  created_at                       DateTime?             @default(now()) @db.Timestamp(0)
+  updated_at                       DateTime?             @default(now()) @updatedAt @db.Timestamp(0)
+  Chat_Chat_participant1_idToUsers Chat[]                @relation("Chat_participant1_idToUsers")
+  Chat_Chat_participant2_idToUsers Chat[]                @relation("Chat_participant2_idToUsers")
+  sent_messages                    Chat_messages[]
+  Gigs                             Gigs[]
+  seller_orders                    Orders[]              @relation("SellerOrders")
+  buyer_orders                     Orders[]              @relation("BuyerOrders")
+  given_reviews                    Reviews[]             @relation("ReviewGiver")
+  received_reviews                 Reviews[]             @relation("ReviewReceiver")
+  User_certifications              User_certifications[]
+  languages                        User_languages[]
+  skills                           User_skills[]
 
   @@map("Users")
 }
 
 model Categories {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(100)
-  description String? @db.Text
-  icon        String? @db.VarChar(100)
-  
-  gigs        Gigs[]
+  id            Int             @id @default(autoincrement())
+  name          String          @unique(map: "name") @db.VarChar(100)
+  description   String?         @db.Text
+  icon          String?         @db.VarChar(100)
+  gigs          Gigs[]
+  Subcategories Subcategories[]
 
   @@map("Categories")
 }
 
 model Languages {
-  id    Int    @id @default(autoincrement())
-  name  String @db.VarChar(100)
-  code  String @unique @db.VarChar(5)
-  
+  id             Int              @id @default(autoincrement())
+  name           String           @unique(map: "name") @db.VarChar(50)
+  code           String           @unique(map: "code") @db.VarChar(5)
   user_languages User_languages[]
 
   @@map("Languages")
 }
 
 model User_skills {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   user_id Int
-  skill   String @db.VarChar(100)
-  
-  user    Users  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  skill   String  @db.VarChar(100)
+  level   String? @default("beginner") @db.VarChar(20)
+  user    Users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "User_skills_ibfk_1")
 
+  @@index([user_id], map: "user_id")
   @@map("User_skills")
 }
 
 model User_languages {
-  id          Int @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   user_id     Int
   language_id Int
-  level       String @default("beginner") @db.VarChar(20)
-  
-  user        Users     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  language    Languages @relation(fields: [language_id], references: [id], onDelete: Cascade)
+  proficiency String?   @default("basic") @db.VarChar(20)
+  user        Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "User_languages_ibfk_1")
+  language    Languages @relation(fields: [language_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "User_languages_ibfk_2")
 
+  @@unique([user_id, language_id], map: "user_id")
+  @@index([language_id], map: "language_id")
   @@map("User_languages")
 }
 
 model Gigs {
-  id               Int      @id @default(autoincrement())
-  user_id          Int
-  category_id      Int
-  title            String   @db.VarChar(255)
-  description      String   @db.Text
-  short_description String  @db.VarChar(255)
-  delivery_time    Int
-  revisions        Int      @default(0)
-  features         Json?
-  starting_price   Decimal  @db.Decimal(10, 2)
-  images           Json?
-  is_active        Boolean  @default(true)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now()) @updatedAt
-  
-  user             Users      @relation(fields: [user_id], references: [id])
-  category         Categories @relation(fields: [category_id], references: [id])
-  orders           Orders[]
-  images_rel       Gig_images[]
+  id                Int            @id @default(autoincrement())
+  seller_id         Int
+  title             String         @db.VarChar(200)
+  short_description String?        @db.VarChar(500)
+  description       String         @db.Text
+  category_id       Int
+  subcategory_id    Int?
+  price             Decimal        @db.Decimal(10, 2)
+  delivery_time     Int
+  revisions         Int?           @default(0)
+  status            String?        @default("active") @db.VarChar(20)
+  image_url         String?        @db.VarChar(500)
+  orders_completed  Int?           @default(0)
+  average_rating    Decimal?       @default(0.00) @db.Decimal(3, 2)
+  total_reviews     Int?           @default(0)
+  created_at        DateTime?      @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?      @default(now()) @updatedAt @db.Timestamp(0)
+  images_rel        Gig_images[]
+  Users             Users          @relation(fields: [seller_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Gigs_ibfk_1")
+  category          Categories     @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Gigs_ibfk_2")
+  Subcategories     Subcategories? @relation(fields: [subcategory_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Gigs_ibfk_3")
+  orders            Orders[]
+  Reviews           Reviews[]
 
+  @@index([category_id], map: "category_id")
+  @@index([seller_id], map: "seller_id")
+  @@index([subcategory_id], map: "subcategory_id")
   @@map("Gigs")
 }
 
 model Gig_images {
-  id      Int    @id @default(autoincrement())
-  gig_id  Int
-  url     String @db.VarChar(500)
-  
-  gig     Gigs   @relation(fields: [gig_id], references: [id], onDelete: Cascade)
+  id        Int    @id @default(autoincrement())
+  gig_id    Int
+  image_url String @db.VarChar(500)
+  gig       Gigs   @relation(fields: [gig_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Gig_images_ibfk_1")
 
+  @@index([gig_id], map: "gig_id")
   @@map("Gig_images")
 }
 
 model Orders {
-  id               Int      @id @default(autoincrement())
-  gig_id           Int
-  buyer_id         Int
-  seller_id        Int
-  status           String   @default("pending") @db.VarChar(50)
-  payment_intent   String?  @db.VarChar(255)
-  is_completed     Boolean  @default(false)
-  price            Decimal  @db.Decimal(10, 2)
-  delivery_time    Int
-  revisions        Int      @default(0)
-  features         Json?
-  created_at       DateTime @default(now())
-  updated_at       DateTime @default(now()) @updatedAt
-  
-  gig              Gigs               @relation(fields: [gig_id], references: [id])
-  buyer            Users              @relation("BuyerOrders", fields: [buyer_id], references: [id])
-  seller           Users              @relation("SellerOrders", fields: [seller_id], references: [id])
-  revisions_rel    Order_revisions[]
-  deliveries       Order_deliveries[]
+  id                 Int                @id @default(autoincrement())
+  gig_id             Int
+  seller_id          Int
+  buyer_id           Int
+  title              String             @db.VarChar(200)
+  description        String?            @db.Text
+  price              Decimal            @db.Decimal(10, 2)
+  delivery_time      Int
+  revisions_included Int?               @default(0)
+  revisions_used     Int?               @default(0)
+  status             String?            @default("pending") @db.VarChar(20)
+  hire_date          DateTime?          @default(now()) @db.Timestamp(0)
+  delivery_date      DateTime?          @db.Timestamp(0)
+  completed          Boolean?           @default(false)
+  completed_at       DateTime?          @db.Timestamp(0)
+  created_at         DateTime?          @default(now()) @db.Timestamp(0)
+  updated_at         DateTime?          @default(now()) @updatedAt @db.Timestamp(0)
+  Chat               Chat[]
+  deliveries         Order_deliveries[]
+  gig                Gigs               @relation(fields: [gig_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Orders_ibfk_1")
+  seller             Users              @relation("SellerOrders", fields: [seller_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Orders_ibfk_2")
+  buyer              Users              @relation("BuyerOrders", fields: [buyer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Orders_ibfk_3")
+  Reviews            Reviews[]
 
+  @@index([buyer_id], map: "buyer_id")
+  @@index([gig_id], map: "gig_id")
+  @@index([seller_id], map: "seller_id")
   @@map("Orders")
 }
 
-model Order_revisions {
-  id           Int      @id @default(autoincrement())
-  order_id     Int
-  requested_by Int
-  reason       String   @db.Text
-  status       String   @default("pending") @db.VarChar(50)
-  created_at   DateTime @default(now())
-  
-  order        Orders             @relation(fields: [order_id], references: [id])
-  requester    Users              @relation(fields: [requested_by], references: [id])
-  deliveries   Order_deliveries[]
-
-  @@map("Order_revisions")
-}
-
 model Order_deliveries {
-  id          Int      @id @default(autoincrement())
-  order_id    Int
-  revision_id Int?
-  message     String   @db.Text
-  attachment  String?  @db.VarChar(500)
-  created_at  DateTime @default(now())
-  
-  order       Orders           @relation(fields: [order_id], references: [id])
-  revision    Order_revisions? @relation(fields: [revision_id], references: [id])
+  id           Int       @id @default(autoincrement())
+  order_id     Int
+  revision_id  Int?
+  message      String?   @db.Text
+  files        Json?
+  delivered_at DateTime? @default(now()) @db.Timestamp(0)
+  order        Orders    @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Order_deliveries_ibfk_1")
 
+  @@index([order_id], map: "order_id")
   @@map("Order_deliveries")
 }
 
-model Conversation {
-  id             Int      @id @default(autoincrement())
-  participant1_id Int
-  participant2_id Int
-  created_at     DateTime @default(now())
-  updated_at     DateTime @default(now()) @updatedAt
-  
-  participant1   Users           @relation("Participant1", fields: [participant1_id], references: [id])
-  participant2   Users           @relation("Participant2", fields: [participant2_id], references: [id])
-  messages       Chat_messages[]
-
-  @@map("Conversation")
-}
-
 model Chat_messages {
-  id              Int      @id @default(autoincrement())
-  conversation_id Int
-  sender_id       Int
-  message         String   @db.Text
-  is_read         Boolean  @default(false)
-  created_at      DateTime @default(now())
-  
-  conversation    Conversation @relation(fields: [conversation_id], references: [id])
-  sender          Users        @relation(fields: [sender_id], references: [id])
+  id          Int       @id @default(autoincrement())
+  thread_id   Int
+  sender_id   Int
+  content     String    @db.Text
+  attachments Json?
+  is_read     Boolean?  @default(false)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  Chat        Chat      @relation(fields: [thread_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Chat_messages_ibfk_1")
+  sender      Users     @relation(fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Chat_messages_ibfk_2")
 
+  @@index([sender_id], map: "sender_id")
+  @@index([thread_id], map: "thread_id")
   @@map("Chat_messages")
 }
 
 model Reviews {
-  id          Int      @id @default(autoincrement())
-  gig_id      Int?
-  order_id    Int?
-  reviewer_id Int
-  reviewee_id Int
-  rating      Int
-  review      String   @db.Text
-  created_at  DateTime @default(now())
-  
-  reviewer    Users @relation("ReviewGiver", fields: [reviewer_id], references: [id])
-  reviewee    Users @relation("ReviewReceiver", fields: [reviewee_id], references: [id])
+  id                     Int       @id @default(autoincrement())
+  order_id               Int
+  gig_id                 Int
+  reviewer_id            Int
+  reviewee_id            Int
+  reviewer_role          String    @db.VarChar(20)
+  reviewee_role          String    @db.VarChar(20)
+  rating                 Int
+  title                  String?   @db.VarChar(200)
+  content                String    @db.Text
+  communication_rating   Int?
+  service_quality_rating Int?
+  delivery_time_rating   Int?
+  is_public              Boolean?  @default(true)
+  seller_response        String?   @db.Text
+  review_date            DateTime? @default(now()) @db.Timestamp(0)
+  created_at             DateTime? @default(now()) @db.Timestamp(0)
+  updated_at             DateTime? @default(now()) @db.Timestamp(0)
+  Orders                 Orders    @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Reviews_ibfk_1")
+  Gigs                   Gigs      @relation(fields: [gig_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Reviews_ibfk_2")
+  reviewer               Users     @relation("ReviewGiver", fields: [reviewer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Reviews_ibfk_3")
+  reviewee               Users     @relation("ReviewReceiver", fields: [reviewee_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Reviews_ibfk_4")
 
+  @@unique([order_id, reviewer_id], map: "order_id")
+  @@index([gig_id], map: "gig_id")
+  @@index([reviewee_id], map: "reviewee_id")
+  @@index([reviewer_id], map: "reviewer_id")
   @@map("Reviews")
+}
+
+model Chat {
+  id                                Int             @id @default(autoincrement())
+  order_id                          Int?
+  participant1_id                   Int
+  participant2_id                   Int
+  last_message_at                   DateTime?       @default(now()) @db.Timestamp(0)
+  created_at                        DateTime?       @default(now()) @db.Timestamp(0)
+  Orders                            Orders?         @relation(fields: [order_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Chat_ibfk_1")
+  Users_Chat_participant1_idToUsers Users           @relation("Chat_participant1_idToUsers", fields: [participant1_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Chat_ibfk_2")
+  Users_Chat_participant2_idToUsers Users           @relation("Chat_participant2_idToUsers", fields: [participant2_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "Chat_ibfk_3")
+  Chat_messages                     Chat_messages[]
+
+  @@unique([participant1_id, participant2_id, order_id], map: "participant1_id")
+  @@index([order_id], map: "order_id")
+  @@index([participant2_id], map: "participant2_id")
+}
+
+model Subcategories {
+  id          Int        @id @default(autoincrement())
+  category_id Int
+  name        String     @db.VarChar(100)
+  description String?    @db.Text
+  Gigs        Gigs[]
+  Categories  Categories @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "Subcategories_ibfk_1")
+
+  @@index([category_id], map: "category_id")
+}
+
+model User_certifications {
+  id            Int       @id @default(autoincrement())
+  user_id       Int
+  certification String    @db.VarChar(200)
+  issuer        String?   @db.VarChar(100)
+  issue_date    DateTime? @db.Date
+  expiry_date   DateTime? @db.Date
+  Users         Users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "User_certifications_ibfk_1")
+
+  @@index([user_id], map: "user_id")
 }

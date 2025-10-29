@@ -154,8 +154,12 @@ const SearchPage: React.FC = () => {
 
                   {/* Rating */}
                   <div className="flex items-center mb-3">
-                    <div className="flex items-center mr-2">{renderStars(gig.rating ?? 0)}</div>
-                    <span className="text-sm text-gray-600">(New)</span>
+                    <div className="flex items-center mr-2">
+                      {renderStars(gig.average_rating ?? 0)}
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      ({gig.total_reviews > 0 ? gig.total_reviews : 'New'})
+                    </span>
                   </div>
 
                   {/* Price and Delivery */}

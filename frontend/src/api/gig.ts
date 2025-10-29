@@ -28,6 +28,8 @@ export type GigSearchResponse = {
       description: string;
       starting_price: number;
       delivery_time: number;
+      average_rating: number;
+      total_reviews: number;
       images?: string[];
       user: {
         id: number;
