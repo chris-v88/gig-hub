@@ -41,15 +41,15 @@ export const orderService = {
 
   // POST /api/thue-cong-viec
   create: async (req) => {
-    const { maCongViec, maNguoiThue, ngayThue, hoanThanh } = req.body;
+    const { gig_id, buyer_id, hire_date, completed } = req.body;
 
-    if (!maCongViec || !maNguoiThue) {
+    if (!gig_id || !buyer_id) {
       throw new BadRequestException('Gig ID and buyer ID are required');
     }
 
     // Get gig details
     const gig = await prisma.gigs.findUnique({
-      where: { id: parseInt(maCongViec) },
+      where: { id: parseInt(gig_id) },
       select: {
         id: true,
         title: true,
@@ -65,24 +65,24 @@ export const orderService = {
     }
 
     // Check if user is trying to order their own gig
-    if (gig.seller_id === parseInt(maNguoiThue)) {
+    if (gig.seller_id === parseInt(buyer_id)) {
       throw new BadRequestException('You cannot order your own gig');
     }
 
     const order = await prisma.orders.create({
       data: {
-        gig_id: parseInt(maCongViec),
+        gig_id: parseInt(gig_id),
         seller_id: gig.seller_id,
-        buyer_id: parseInt(maNguoiThue),
+        buyer_id: parseInt(buyer_id),
         title: gig.title,
         description: `Order for: ${gig.title}`,
         price: parseFloat(gig.price),
         delivery_time: gig.delivery_time,
         revisions_included: gig.revisions || 0,
         status: 'pending',
-        completed: hoanThanh || false,
-        order_date: ngayThue ? new Date(ngayThue) : new Date(),
-        completed_at: hoanThanh ? new Date() : null,
+        completed: completed || false,
+        hire_date: hire_date || new Date(),
+        completed: completed || false
       },
       include: {
         gig: {
@@ -239,7 +239,7 @@ export const orderService = {
   // PUT /api/thue-cong-viec/:id
   update: async (req) => {
     const { id } = req.params;
-    const { maCongViec, maNguoiThue, ngayThue, hoanThanh } = req.body;
+    const { hire_date, completed, status } = req.body;
 
     const order = await prisma.orders.findUnique({
       where: { id: parseInt(id) },
@@ -249,36 +249,60 @@ export const orderService = {
       throw new BadRequestException('Order not found');
     }
 
+    // Fix inconsistent completed_at logic: clear timestamp when uncompleting
+    let completedAt;
+    if (completed !== undefined) {
+      completedAt = completed ? new Date() : null;
+    } else {
+      completedAt = order.completed_at;
+    }
+
     const updatedOrder = await prisma.orders.update({
       where: { id: parseInt(id) },
       data: {
-        completed: hoanThanh !== undefined ? hoanThanh : order.completed,
-        completed_at: hoanThanh ? new Date() : order.completed_at,
-        order_date: ngayThue ? new Date(ngayThue) : order.order_date,
+        hire_date: hire_date ? new Date(hire_date) : undefined,
+        completed: completed !== undefined ? completed : undefined,
+        completed_at: completedAt,
+        status: status || undefined
       },
       include: {
+        buyer: {
+          select: { id: true, name: true, email: true, profile_image: true }
+        },
+        seller: {
+          select: { id: true, name: true, email: true, profile_image: true }
+        },
         gig: {
           select: {
             id: true,
             title: true,
             price: true,
-          },
-        },
-        seller: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-          },
-        },
-        buyer: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-          },
-        },
-      },
+            image_url: true,
+            description: true
+          }
+        }
+      }
+    });
+
+    return updatedOrder;
+  },
+
+  // Update order method using correct parameter names
+  async updateOrder(id, { gig_id, buyer_id, hire_date, completed }) {
+    const orderExists = await this.getOrderById(id);
+    if (!orderExists) {
+      throw new NotFoundException('Order not found');
+    }
+
+    const updatedOrder = await prisma.orders.update({
+      where: { order_id: parseInt(id) },
+      data: {
+        gig_id: gig_id ? parseInt(gig_id) : undefined,
+        buyer_id: buyer_id ? parseInt(buyer_id) : undefined,
+        hire_date: hire_date ? new Date(hire_date) : undefined,
+        completed: completed !== undefined ? completed : undefined,
+        completed_at: completed ? new Date() : null
+      }
     });
 
     return updatedOrder;
