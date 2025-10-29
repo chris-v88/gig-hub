@@ -140,7 +140,9 @@ const GigReviews = (props: GigReviewsProps) => {
                           key={i}
                           name="Star"
                           size={14}
-                          className={i < review.rating ? 'text-yellow-400' : 'text-gray-300'}
+                          className={
+                            i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                          }
                         />
                       ))}
                     </div>

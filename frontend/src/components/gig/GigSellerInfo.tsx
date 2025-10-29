@@ -26,8 +26,19 @@ const GigSellerInfo = (props: GigSellerInfoProps) => {
             <p className="text-sm text-gray-600">@{gig.user.username}</p>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <div className="flex items-center">
-                <Icon name="Star" size={14} className="text-yellow-400 mr-1" />
-                <span>{gig.average_rating}</span>
+                {[...Array(5)].map((_, i) => (
+                  <Icon
+                    key={i}
+                    name="Star"
+                    size={14}
+                    className={
+                      i < Math.floor(gig.average_rating)
+                        ? 'text-yellow-400 fill-current'
+                        : 'text-gray-300'
+                    }
+                  />
+                ))}
+                <span className="ml-1">{gig.average_rating}</span>
               </div>
               <span>({gig.total_reviews} reviews)</span>
             </div>
