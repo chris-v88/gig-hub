@@ -31,7 +31,11 @@ const GigOrderCard = (props: GigOrderCardProps) => {
           {gig.revisions && (
             <div className="flex items-center text-sm text-gray-500 mt-1">
               <Icon name="RotateCcw" size={14} className="mr-1" />
-              <span>{gig.revisions} revisions</span>
+              <span>
+                {gig.revisions >= 999 || gig.revisions === -1
+                  ? 'Unlimited revisions'
+                  : `${gig.revisions} revisions`}
+              </span>
             </div>
           )}
         </div>

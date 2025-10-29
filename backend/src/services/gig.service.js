@@ -164,6 +164,10 @@ export const gigService = {
       where: { id: parseInt(id) },
       select: { 
         id: true, 
+        title: true,
+        price: true,
+        delivery_time: true,
+        revisions: true,
         seller_id: true,
         Users: {
           select: { id: true }
