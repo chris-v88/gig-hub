@@ -59,14 +59,28 @@ model Languages {
   @@map("Languages")
 }
 
+model Skills {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique @db.VarChar(100)
+  description String?       @db.Text
+  created_at  DateTime?     @default(now()) @db.Timestamp(0)
+  updated_at  DateTime?     @default(now()) @updatedAt @db.Timestamp(0)
+  UserSkills  User_skills[]
+
+  @@map("Skills")
+}
+
 model User_skills {
-  id      Int     @id @default(autoincrement())
-  user_id Int
-  skill   String  @db.VarChar(100)
-  level   String? @default("beginner") @db.VarChar(20)
-  user    Users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "User_skills_ibfk_1")
+  id       Int     @id @default(autoincrement())
+  user_id  Int
+  skill_id Int?
+  skill    String? @db.VarChar(100) // For backward compatibility
+  level    String? @default("beginner") @db.VarChar(20)
+  user     Users   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "User_skills_ibfk_1")
+  Skills   Skills? @relation(fields: [skill_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "user_id")
+  @@index([skill_id], map: "skill_id")
   @@map("User_skills")
 }
 
