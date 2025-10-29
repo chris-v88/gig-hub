@@ -403,4 +403,169 @@ export const gigService = {
       throw new BadRequestException('Error searching gigs');
     }
   },
+
+  // GET /api/cong-viec/phan-trang-tim-kiem
+  searchPagination: async (req) => {
+    return await gigService.search(req); // Use existing search method
+  },
+
+  // POST /api/cong-viec/upload-hinh-cong-viec/:MaCongViec
+  uploadGigImage: async (req) => {
+    const { MaCongViec } = req.params;
+    
+    // This would need Cloudinary integration
+    // For now, return a placeholder response
+    return {
+      message: 'Image upload functionality needs Cloudinary integration',
+      gigId: MaCongViec,
+    };
+  },
+
+  // GET /api/cong-viec/lay-menu-loai-cong-viec
+  getJobTypeMenu: async (req) => {
+    const categories = await prisma.categories.findMany({
+      include: {
+        Subcategories: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+
+    return categories;
+  },
+
+  // GET /api/cong-viec/lay-chi-tiet-loai-cong-viec/:MaLoaiCongViec
+  getJobTypeDetails: async (req) => {
+    const { MaLoaiCongViec } = req.params;
+
+    const category = await prisma.categories.findUnique({
+      where: { id: parseInt(MaLoaiCongViec) },
+      include: {
+        Subcategories: {
+          include: {
+            gigs: {
+              select: {
+                id: true,
+                title: true,
+                price: true,
+                image_url: true,
+              },
+              take: 10, // Limit to 10 gigs per subcategory
+            },
+          },
+        },
+      },
+    });
+
+    if (!category) {
+      throw new BadRequestException('Job category not found');
+    }
+
+    return category;
+  },
+
+  // GET /api/cong-viec/lay-cong-viec-theo-chi-tiet-loai/:MaChiTietLoai
+  getGigsBySubcategory: async (req) => {
+    const { MaChiTietLoai } = req.params;
+
+    const gigs = await prisma.gigs.findMany({
+      where: {
+        subcategory_id: parseInt(MaChiTietLoai),
+        status: 'active',
+      },
+      include: {
+        Users: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile_image: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        subcategory: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        average_rating: 'desc',
+      },
+    });
+
+    const gigsWithRatings = gigs.map(gig => {
+      const { Users, ...gigData } = gig;
+      return {
+        ...gigData,
+        user: Users,
+        average_rating: parseFloat(gig.average_rating || '0.0'),
+        total_reviews: gig.total_reviews || 0,
+      };
+    });
+
+    return gigsWithRatings;
+  },
+
+  // GET /api/cong-viec/lay-cong-viec-chi-tiet/:MaCongViec
+  getGigDetails: async (req) => {
+    return await gigService.findOne(req); // Use existing findOne method
+  },
+
+  // GET /api/cong-viec/lay-danh-sach-cong-viec-theo-ten/:TenCongViec
+  getGigsByName: async (req) => {
+    const { TenCongViec } = req.params;
+
+    const gigs = await prisma.gigs.findMany({
+      where: {
+        title: {
+          contains: TenCongViec,
+        },
+        status: 'active',
+      },
+      include: {
+        Users: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile_image: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        average_rating: 'desc',
+      },
+    });
+
+    const gigsWithRatings = gigs.map(gig => {
+      const { Users, ...gigData } = gig;
+      return {
+        ...gigData,
+        user: Users,
+        average_rating: parseFloat(gig.average_rating || '0.0'),
+        total_reviews: gig.total_reviews || 0,
+      };
+    });
+
+    return gigsWithRatings;
+  },
 };

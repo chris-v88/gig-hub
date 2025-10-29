@@ -5,12 +5,21 @@ import { protect } from '../common/middlewares/protect.middleware.js';
 const gigRouter = express.Router();
 
 // Create route CRUD
-gigRouter.post('/', gigController.create);
+gigRouter.post('/', protect, gigController.create);
 gigRouter.get('/', gigController.findAll);
 gigRouter.get('/search', gigController.search);
+gigRouter.get('/search-pagination', gigController.searchPagination);
+gigRouter.get('/categories-menu', gigController.getJobTypeMenu);
+gigRouter.get('/category-details/:categoryId', gigController.getJobTypeDetails);
+gigRouter.get('/by-subcategory/:subcategoryId', gigController.getGigsBySubcategory);
+gigRouter.get('/details/:gigId', gigController.getGigDetails);
+gigRouter.get('/by-name/:gigName', gigController.getGigsByName);
 gigRouter.get('/:id', gigController.findOne);
-gigRouter.patch('/:id', gigController.update);
-gigRouter.delete('/:id', gigController.remove);
+gigRouter.put('/:id', protect, gigController.update);
+gigRouter.delete('/:id', protect, gigController.remove);
+
+// Image upload routes
+gigRouter.post('/upload-image/:gigId', protect, gigController.uploadGigImage);
 
 // Review routes
 gigRouter.post('/:id/reviews', protect, gigController.createReview);
