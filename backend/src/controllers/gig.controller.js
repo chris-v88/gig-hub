@@ -63,4 +63,14 @@ export const gigController = {
       next(error);
     }
   },
+
+  createReview: async (req, res, next) => {
+    try {
+      const result = await gigService.createReview(req);
+      const response = responseSuccess(result, `Review created successfully for gig #${req.params.id}`, statusCodes.CREATED);
+      res.status(response.statusCode).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };
