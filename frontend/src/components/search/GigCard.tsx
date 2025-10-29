@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../ui/Icon';
+import StarRating from '../ui/StarRating';
 import type { Gig } from '../../api/gig';
 
 export type GigCardProps = {
@@ -9,29 +10,6 @@ export type GigCardProps = {
 
 const GigCard = (props: GigCardProps) => {
   const { gig } = props;
-
-  const renderStars = (rating = 0) => {
-    const stars = [];
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<Icon key={i} name="Star" size={12} className="text-yellow-400 fill-current" />);
-    }
-
-    if (hasHalfStar) {
-      stars.push(
-        <Icon key="half" name="StarHalf" size={12} className="text-yellow-400 fill-current" />
-      );
-    }
-
-    const remainingStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < remainingStars; i++) {
-      stars.push(<Icon key={`empty-${i}`} name="Star" size={12} className="text-gray-300" />);
-    }
-
-    return stars;
-  };
 
   return (
     <Link to={`/gig/${gig.id}`}>
@@ -71,7 +49,7 @@ const GigCard = (props: GigCardProps) => {
 
           {/* Rating */}
           <div className="flex items-center mb-3">
-            <div className="flex items-center mr-2">{renderStars(gig.average_rating ?? 0)}</div>
+            <StarRating rating={gig.average_rating ?? 0} size={12} showHalfStars className="mr-2" />
             <span className="text-sm text-gray-600">
               ({gig.total_reviews > 0 ? gig.total_reviews : 'New'})
             </span>

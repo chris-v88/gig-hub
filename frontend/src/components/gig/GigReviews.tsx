@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { UseMutationResult } from '@tanstack/react-query';
 import Button from '../ui/Button';
 import Icon from '../ui/Icon';
+import StarRating from '../ui/StarRating';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import { reviewSchema, type ReviewFormData } from '../../schemas/validation';
 import type { Gig, CreateReviewData, CreateReviewResponse } from '../../api/gig';
@@ -134,18 +135,7 @@ const GigReviews = (props: GigReviewsProps) => {
                     {review.title && (
                       <h5 className="font-medium text-gray-800 mb-1">{review.title}</h5>
                     )}
-                    <div className="flex items-center mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Icon
-                          key={i}
-                          name="Star"
-                          size={14}
-                          className={
-                            i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                          }
-                        />
-                      ))}
-                    </div>
+                    <StarRating rating={review.rating} size={14} className="mb-2" />
                     <p className="text-gray-700">{review.content}</p>
                   </div>
                 </div>

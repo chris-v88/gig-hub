@@ -27,7 +27,7 @@ const countries = [
   'Other',
 ];
 
-const SignupPage: React.FC = () => {
+const SignupPage = () => {
   const navigate = useNavigate();
   const signupMutation = useSignup();
 

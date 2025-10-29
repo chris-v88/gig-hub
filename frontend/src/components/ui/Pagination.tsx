@@ -19,7 +19,6 @@ const Pagination = (props: PaginationProps) => {
 
   // Show up to 5 page numbers, with ellipsis if needed
   const getPageNumbers = () => {
-    const pages = [];
     let start = Math.max(1, page - 2);
     let end = Math.min(totalPages, page + 2);
     if (page <= 3) {
@@ -27,10 +26,9 @@ const Pagination = (props: PaginationProps) => {
     } else if (page >= totalPages - 2) {
       start = Math.max(1, totalPages - 4);
     }
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-    return pages;
+
+    const length = end - start + 1;
+    return Array.from({ length }, (_, i) => start + i);
   };
   const pageNumbers = getPageNumbers();
 

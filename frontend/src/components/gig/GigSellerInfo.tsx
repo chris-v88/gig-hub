@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '../ui/Button';
-import Icon from '../ui/Icon';
+import StarRating from '../ui/StarRating';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 import type { Gig } from '../../api/gig';
 
@@ -26,18 +26,7 @@ const GigSellerInfo = (props: GigSellerInfoProps) => {
             <p className="text-sm text-gray-600">@{gig.user.username}</p>
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Icon
-                    key={i}
-                    name="Star"
-                    size={14}
-                    className={
-                      i < Math.floor(gig.average_rating)
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-300'
-                    }
-                  />
-                ))}
+                <StarRating rating={gig.average_rating} size={14} />
                 <span className="ml-1">{gig.average_rating}</span>
               </div>
               <span>({gig.total_reviews} reviews)</span>
