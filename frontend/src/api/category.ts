@@ -9,7 +9,7 @@ export type Category = {
 };
 
 export type CategoryCreateRequest = {
-  tenLoaiCongViec: string;
+  name: string;
 };
 
 export type PaginationResponse<T> = {

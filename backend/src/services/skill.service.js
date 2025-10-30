@@ -31,18 +31,19 @@ export const skillService = {
     return skills;
   },
 
-  // POST /api/skill
+  // From assignment: (Not in original assignment)
+  // From this app: POST /api/skills
   create: async (req) => {
-    const { tenSkill, moTa } = req.body;
+    const { name, description } = req.body;
 
-    if (!tenSkill) {
+    if (!name) {
       throw new BadRequestException('Skill name is required');
     }
 
     // Check if skill already exists
     const existingSkill = await prisma.Skills.findFirst({
       where: {
-        name: tenSkill,
+        name: name,
       },
     });
 
@@ -52,8 +53,8 @@ export const skillService = {
 
     const skill = await prisma.Skills.create({
       data: {
-        name: tenSkill,
-        description: moTa || '',
+        name: name,
+        description: description || '',
       },
     });
 
@@ -144,10 +145,11 @@ export const skillService = {
     return skill;
   },
 
-  // PUT /api/skill/:id
+  // From assignment: (Not in original assignment)
+  // From this app: PUT /api/skills/:id
   update: async (req) => {
     const { id } = req.params;
-    const { tenSkill, moTa } = req.body;
+    const { name, description } = req.body;
 
     const skill = await prisma.Skills.findUnique({
       where: { id: parseInt(id) },
@@ -158,10 +160,10 @@ export const skillService = {
     }
 
     // Check if new name conflicts with existing skills
-    if (tenSkill && tenSkill !== skill.name) {
+    if (name && name !== skill.name) {
       const existingSkill = await prisma.Skills.findFirst({
         where: {
-          name: tenSkill,
+          name: name,
           id: {
             not: parseInt(id),
           },
@@ -176,8 +178,8 @@ export const skillService = {
     const updatedSkill = await prisma.Skills.update({
       where: { id: parseInt(id) },
       data: {
-        name: tenSkill || skill.name,
-        description: moTa !== undefined ? moTa : skill.description,
+        name: name || skill.name,
+        description: description !== undefined ? description : skill.description,
       },
       include: {
         _count: {

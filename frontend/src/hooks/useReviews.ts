@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { reviewApi, ReviewCreateRequest, ReviewUpdateRequest } from '../api/review';
+import { reviewApi, ReviewUpdateRequest } from '../api/review';
 
 // Query Keys
 export const reviewKeys = {
@@ -38,8 +38,8 @@ export const useCreateReview = () => {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: reviewKeys.all });
       // Invalidate the specific gig's reviews
-      if (variables.maCongViec) {
-        queryClient.invalidateQueries({ queryKey: reviewKeys.byGig(variables.maCongViec) });
+      if (variables.gig_id) {
+        queryClient.invalidateQueries({ queryKey: reviewKeys.byGig(variables.gig_id) });
       }
     },
   });

@@ -20,13 +20,13 @@ export type Skill = {
 };
 
 export type SkillCreateRequest = {
-  tenSkill: string;
-  moTa?: string;
+  name: string;
+  description?: string;
 };
 
 export type SkillUpdateRequest = {
-  tenSkill?: string;
-  moTa?: string;
+  name?: string;
+  description?: string;
 };
 
 export type PaginationResponse<T> = {

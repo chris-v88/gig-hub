@@ -41,10 +41,10 @@ const ReviewForm = ({ gigId, onSuccess, onCancel }: ReviewFormProps) => {
       }
 
       const reviewData = {
-        maCongViec: gigId,
-        maNguoiBinhLuan: parseInt(userId),
-        noiDung: content.trim(),
-        saoBinhLuan: rating,
+        gig_id: gigId,
+        reviewer_id: parseInt(userId),
+        content: content.trim(),
+        rating: rating,
       };
 
       const review = await reviewApi.create(reviewData);

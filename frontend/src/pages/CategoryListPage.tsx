@@ -22,7 +22,7 @@ const CategoryListPage = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    tenLoaiCongViec: '',
+    name: '',
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -48,14 +48,14 @@ const CategoryListPage = () => {
   const handleCreateCategory = () => {
     setShowCreateForm(true);
     setEditingCategory(null);
-    setFormData({ tenLoaiCongViec: '' });
+    setFormData({ name: '' });
     setFormErrors({});
   };
 
   const handleEditCategory = (category: Category) => {
     setShowCreateForm(true);
     setEditingCategory(category);
-    setFormData({ tenLoaiCongViec: category.name });
+    setFormData({ name: category.name });
     setFormErrors({});
   };
 
@@ -96,7 +96,7 @@ const CategoryListPage = () => {
   const handleCancel = () => {
     setShowCreateForm(false);
     setEditingCategory(null);
-    setFormData({ tenLoaiCongViec: '' });
+    setFormData({ name: '' });
     setFormErrors({});
   };
 
@@ -144,13 +144,13 @@ const CategoryListPage = () => {
                   </label>
                   <Input
                     type="text"
-                    value={formData.tenLoaiCongViec}
-                    onChange={(e) => setFormData({ ...formData, tenLoaiCongViec: e.target.value })}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter category name"
-                    className={formErrors.tenLoaiCongViec ? 'border-red-500' : ''}
+                    className={formErrors.name ? 'border-red-500' : ''}
                   />
-                  {formErrors.tenLoaiCongViec && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.tenLoaiCongViec}</p>
+                  {formErrors.name && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
                   )}
                 </div>
               </div>

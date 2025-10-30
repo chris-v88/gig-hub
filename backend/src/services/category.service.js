@@ -13,17 +13,18 @@ export const categoryService = {
     return categories;
   },
 
-  // POST /api/loai-cong-viec
+  // From assignment: POST /api/loai-cong-viec
+  // From this app: POST /api/categories
   create: async (req) => {
-    const { tenLoaiCongViec } = req.body;
+    const { name } = req.body;
 
-    if (!tenLoaiCongViec) {
+    if (!name) {
       throw new BadRequestException('Job category name is required');
     }
 
     const category = await prisma.categories.create({
       data: {
-        name: tenLoaiCongViec,
+        name: name,
       },
     });
 
@@ -82,12 +83,13 @@ export const categoryService = {
     return category;
   },
 
-  // PUT /api/loai-cong-viec/:id
+  // From assignment: PUT /api/loai-cong-viec/{id}
+  // From this app: PUT /api/categories/:id
   update: async (req) => {
     const { id } = req.params;
-    const { tenLoaiCongViec } = req.body;
+    const { name } = req.body;
 
-    if (!tenLoaiCongViec) {
+    if (!name) {
       throw new BadRequestException('Job category name is required');
     }
 
@@ -102,7 +104,7 @@ export const categoryService = {
     const updatedCategory = await prisma.categories.update({
       where: { id: parseInt(id) },
       data: {
-        name: tenLoaiCongViec,
+        name: name,
       },
     });
 

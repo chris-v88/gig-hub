@@ -13,14 +13,14 @@ export type Subcategory = {
 };
 
 export type SubcategoryCreateRequest = {
-  tenChiTiet: string;
+  name: string;
 };
 
 export type SubcategoryGroupRequest = {
-  tenNhom: string;
-  hinhAnh?: string;
-  maLoaiCongviec: number;
-  dsChiTietLoai: number[];
+  name: string;
+  image_url?: string;
+  category_id: number;
+  subcategory_list: number[];
 };
 
 export type SubcategoryGroup = {
@@ -101,11 +101,15 @@ export const subcategoryApi = {
     groupId: number,
     formData: FormData
   ): Promise<{ message: string; imageUrl?: string }> => {
-    const response = await axiosInstance.post(`/subcategories/upload-group-image/${groupId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    const response = await axiosInstance.post(
+      `/subcategories/upload-group-image/${groupId}`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
     return response.data.content;
   },
 };

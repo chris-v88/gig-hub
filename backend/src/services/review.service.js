@@ -37,7 +37,8 @@ export const reviewService = {
     return reviews;
   },
 
-  // POST /api/binh-luan
+  // From assignment: POST /api/binh-luan
+  // From this app: POST /api/reviews
   create: async (req) => {
     const { gig_id, reviewer_id, content, rating } = req.body;
 
@@ -183,13 +184,14 @@ export const reviewService = {
     return { message: 'Review deleted successfully' };
   },
 
-  // GET /api/binh-luan/lay-binh-luan-theo-cong-viec/:MaCongViec
+  // From assignment: GET /api/binh-luan/lay-binh-luan-theo-cong-viec/{MaCongViec}
+  // From this app: GET /api/reviews/by-gig/:gig_id
   getByGig: async (req) => {
-    const { MaCongViec } = req.params;
+    const { gig_id } = req.params;
 
     const reviews = await prisma.reviews.findMany({
       where: {
-        gig_id: parseInt(MaCongViec),
+        gig_id: parseInt(gig_id),
         is_public: true,
       },
       include: {

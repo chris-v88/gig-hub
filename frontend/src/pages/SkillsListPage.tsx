@@ -20,8 +20,8 @@ const SkillsListPage = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    tenSkill: '',
-    moTa: '',
+    name: '',
+    description: '',
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -55,7 +55,7 @@ const SkillsListPage = () => {
   const handleCreateSkill = () => {
     setShowCreateForm(true);
     setEditingSkill(null);
-    setFormData({ tenSkill: '', moTa: '' });
+    setFormData({ name: '', description: '' });
     setFormErrors({});
   };
 
@@ -63,8 +63,8 @@ const SkillsListPage = () => {
     setShowCreateForm(true);
     setEditingSkill(skill);
     setFormData({
-      tenSkill: skill.name,
-      moTa: skill.description || '',
+      name: skill.name,
+      description: skill.description || '',
     });
     setFormErrors({});
   };
@@ -108,7 +108,7 @@ const SkillsListPage = () => {
   const handleCancel = () => {
     setShowCreateForm(false);
     setEditingSkill(null);
-    setFormData({ tenSkill: '', moTa: '' });
+    setFormData({ name: '', description: '' });
     setFormErrors({});
   };
 
@@ -154,13 +154,13 @@ const SkillsListPage = () => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">Skill Name</label>
                   <Input
                     type="text"
-                    value={formData.tenSkill}
-                    onChange={(e) => setFormData({ ...formData, tenSkill: e.target.value })}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Enter skill name"
-                    className={formErrors.tenSkill ? 'border-red-500' : ''}
+                    className={formErrors.name ? 'border-red-500' : ''}
                   />
-                  {formErrors.tenSkill && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.tenSkill}</p>
+                  {formErrors.name && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
                   )}
                 </div>
 
@@ -170,8 +170,8 @@ const SkillsListPage = () => {
                   </label>
                   <Input
                     type="text"
-                    value={formData.moTa}
-                    onChange={(e) => setFormData({ ...formData, moTa: e.target.value })}
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     placeholder="Enter skill description"
                   />
                 </div>

@@ -404,24 +404,27 @@ export const gigService = {
     }
   },
 
-  // GET /api/cong-viec/phan-trang-tim-kiem
+  // From assignment: GET /api/cong-viec/phan-trang-tim-kiem
+  // From this app: GET /api/gigs/search-pagination
   searchPagination: async (req) => {
     return await gigService.search(req); // Use existing search method
   },
 
-  // POST /api/cong-viec/upload-hinh-cong-viec/:MaCongViec
+  // From assignment: POST /api/cong-viec/upload-hinh-cong-viec/{MaCongViec}
+  // From this app: POST /api/gigs/upload-image/:gig_id
   uploadGigImage: async (req) => {
-    const { MaCongViec } = req.params;
+    const { gig_id } = req.params;
     
     // This would need Cloudinary integration
     // For now, return a placeholder response
     return {
       message: 'Image upload functionality needs Cloudinary integration',
-      gigId: MaCongViec,
+      gigId: gig_id,
     };
   },
 
-  // GET /api/cong-viec/lay-menu-loai-cong-viec
+  // From assignment: GET /api/cong-viec/lay-menu-loai-cong-viec
+  // From this app: GET /api/gigs/categories-menu
   getJobTypeMenu: async (req) => {
     const categories = await prisma.categories.findMany({
       include: {
@@ -440,7 +443,8 @@ export const gigService = {
     return categories;
   },
 
-  // GET /api/cong-viec/lay-chi-tiet-loai-cong-viec/:MaLoaiCongViec
+  // From assignment: GET /api/cong-viec/lay-chi-tiet-loai-cong-viec/{MaLoaiCongViec}
+  // From this app: GET /api/gigs/category-details/:categoryId
   getJobTypeDetails: async (req) => {
     const { MaLoaiCongViec } = req.params;
 
@@ -470,13 +474,14 @@ export const gigService = {
     return category;
   },
 
-  // GET /api/cong-viec/lay-cong-viec-theo-chi-tiet-loai/:MaChiTietLoai
+  // From assignment: GET /api/cong-viec/lay-cong-viec-theo-chi-tiet-loai/{MaChiTietLoai}
+  // From this app: GET /api/gigs/by-subcategory/:subcategory_id
   getGigsBySubcategory: async (req) => {
-    const { MaChiTietLoai } = req.params;
+    const { subcategory_id } = req.params;
 
     const gigs = await prisma.gigs.findMany({
       where: {
-        subcategory_id: parseInt(MaChiTietLoai),
+        subcategory_id: parseInt(subcategory_id),
         status: 'active',
       },
       include: {
@@ -494,7 +499,7 @@ export const gigService = {
             name: true,
           },
         },
-        subcategory: {
+        Subcategories: {
           select: {
             id: true,
             name: true,
@@ -519,19 +524,21 @@ export const gigService = {
     return gigsWithRatings;
   },
 
-  // GET /api/cong-viec/lay-cong-viec-chi-tiet/:MaCongViec
+  // From assignment: GET /api/cong-viec/lay-cong-viec-chi-tiet/{MaCongViec}
+  // From this app: GET /api/gigs/details/:id
   getGigDetails: async (req) => {
     return await gigService.findOne(req); // Use existing findOne method
   },
 
-  // GET /api/cong-viec/lay-danh-sach-cong-viec-theo-ten/:TenCongViec
+  // From assignment: GET /api/cong-viec/lay-danh-sach-cong-viec-theo-ten/{TenCongViec}
+  // From this app: GET /api/gigs/by-name/:gig_name
   getGigsByName: async (req) => {
-    const { TenCongViec } = req.params;
+    const { gig_name } = req.params;
 
     const gigs = await prisma.gigs.findMany({
       where: {
         title: {
-          contains: TenCongViec,
+          contains: gig_name,
         },
         status: 'active',
       },

@@ -32,15 +32,15 @@ export type Review = {
 };
 
 export type ReviewCreateRequest = {
-  maCongViec: number;
-  maNguoiBinhLuan: number;
-  noiDung: string;
-  saoBinhLuan: number;
+  gig_id: number;
+  reviewer_id: number;
+  content: string;
+  rating: number;
 };
 
 export type ReviewUpdateRequest = {
-  noiDung?: string;
-  saoBinhLuan?: number;
+  content?: string;
+  rating?: number;
 };
 
 export const reviewApi = {

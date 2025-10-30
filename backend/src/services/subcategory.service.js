@@ -21,17 +21,18 @@ export const subcategoryService = {
     return subcategories;
   },
 
-  // POST /api/chi-tiet-loai-cong-viec
+  // From assignment: POST /api/chi-tiet-loai-cong-viec
+  // From this app: POST /api/subcategories
   create: async (req) => {
-    const { tenChiTiet } = req.body;
+    const { name } = req.body;
 
-    if (!tenChiTiet) {
+    if (!name) {
       throw new BadRequestException('Subcategory name is required');
     }
 
     const subcategory = await prisma.Subcategories.create({
       data: {
-        name: tenChiTiet,
+        name: name,
       },
     });
 
@@ -106,9 +107,9 @@ export const subcategoryService = {
   // PUT /api/chi-tiet-loai-cong-viec/:id
   update: async (req) => {
     const { id } = req.params;
-    const { tenChiTiet } = req.body;
+    const { name } = req.body;
 
-    if (!tenChiTiet) {
+    if (!name) {
       throw new BadRequestException('Subcategory name is required');
     }
 
@@ -123,7 +124,7 @@ export const subcategoryService = {
     const updatedSubcategory = await prisma.Subcategories.update({
       where: { id: parseInt(id) },
       data: {
-        name: tenChiTiet,
+        name: name,
       },
     });
 
@@ -149,30 +150,31 @@ export const subcategoryService = {
     return { message: 'Subcategory deleted successfully' };
   },
 
-  // POST /api/chi-tiet-loai-cong-viec/them-nhom-chi-tiet-loai
+  // From assignment: POST /api/chi-tiet-loai-cong-viec/them-nhom-chi-tiet-loai
+  // From this app: POST /api/subcategories/create-group
   createGroup: async (req) => {
-    const { tenChiTiet, maLoaiCongViec, danhSachChiTiet } = req.body;
+    const { name, category_id, subcategory_list } = req.body;
 
-    if (!tenChiTiet || !maLoaiCongViec) {
+    if (!name || !category_id) {
       throw new BadRequestException('Group name and category ID are required');
     }
 
     // Create main subcategory
     const mainSubcategory = await prisma.Subcategories.create({
       data: {
-        name: tenChiTiet,
-        category_id: parseInt(maLoaiCongViec),
+        name: name,
+        category_id: parseInt(category_id),
       },
     });
 
     // If there are child subcategories, create them
-    if (danhSachChiTiet && Array.isArray(danhSachChiTiet)) {
+    if (subcategory_list && Array.isArray(subcategory_list)) {
       const childSubcategories = await Promise.all(
-        danhSachChiTiet.map(childId =>
+        subcategory_list.map(childId =>
           prisma.Subcategories.update({
             where: { id: parseInt(childId) },
             data: {
-              category_id: parseInt(maLoaiCongViec),
+              category_id: parseInt(category_id),
             },
           })
         )
@@ -187,59 +189,54 @@ export const subcategoryService = {
     return mainSubcategory;
   },
 
-  // PUT /api/chi-tiet-loai-cong-viec/sua-nhom-chi-tiet-loai/:id
+  // From assignment: PUT /api/chi-tiet-loai-cong-viec/sua-nhom-chi-tiet-loai/{id}
+  // From this app: PUT /api/subcategories/update-group/:id
   updateGroup: async (req) => {
     const { id } = req.params;
-    const { tenChiTiet, maLoaiCongViec, danhSachChiTiet } = req.body;
+    const { name, category_id, subcategory_list } = req.body;
 
-    const subcategory = await prisma.Subcategories.findUnique({
-      where: { id: parseInt(id) },
-    });
-
-    if (!subcategory) {
-      throw new BadRequestException('Subcategory group not found');
+    if (!name || !category_id) {
+      throw new BadRequestException('Group name and category ID are required');
     }
 
     // Update main subcategory
     const updatedSubcategory = await prisma.Subcategories.update({
-      where: { id: parseInt(id) },
+      where: {
+        id: parseInt(id),
+      },
       data: {
-        name: tenChiTiet,
-        category_id: maLoaiCongViec ? parseInt(maLoaiCongViec) : subcategory.category_id,
+        name: name,
+        category_id: parseInt(category_id),
       },
     });
 
     // Update child subcategories if provided
-    if (danhSachChiTiet && Array.isArray(danhSachChiTiet)) {
-      const childSubcategories = await Promise.all(
-        danhSachChiTiet.map(childId =>
+    if (subcategory_list && Array.isArray(subcategory_list)) {
+      await Promise.all(
+        subcategory_list.map(childId =>
           prisma.Subcategories.update({
             where: { id: parseInt(childId) },
             data: {
-              category_id: maLoaiCongViec ? parseInt(maLoaiCongViec) : subcategory.category_id,
+              category_id: parseInt(category_id),
             },
           })
         )
       );
-
-      return {
-        updatedSubcategory,
-        childSubcategories,
-      };
     }
 
     return updatedSubcategory;
   },
 
-  // POST /api/chi-tiet-loai-cong-viec/upload-hinh-nhom-loai-cong-viec/:MaNhomLoaiCongViec
+  // From assignment: POST /api/chi-tiet-loai-cong-viec/upload-hinh-nhom-loai-cong-viec/{MaNhomLoaiCongViec}
+  // From this app: POST /api/subcategories/upload-group-image/:group_id
   uploadGroupImage: async (req) => {
-    const { MaNhomLoaiCongViec } = req.params;
+    const { group_id } = req.params;
 
     // This would need Cloudinary integration
     // For now, return a placeholder response
     return {
       message: 'Image upload functionality needs Cloudinary integration',
-      groupId: MaNhomLoaiCongViec,
+      groupId: group_id,
     };
   },
 };

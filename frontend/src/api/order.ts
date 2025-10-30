@@ -2,15 +2,15 @@ import { axiosInstance } from './axiosInstance';
 import type { Order, PaginationResponse } from '../types/api.types';
 
 export type OrderCreateRequest = {
-  maCongViec: number;
-  maNguoiThue: number;
-  ngayThue?: string;
-  hoanThanh?: boolean;
+  gig_id: number;
+  buyer_id: number;
+  order_date?: string;
+  completed?: boolean;
 };
 
 export type OrderUpdateRequest = {
-  ngayThue?: string;
-  hoanThanh?: boolean;
+  order_date?: string;
+  completed?: boolean;
   status?: string;
 };
 
