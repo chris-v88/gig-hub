@@ -79,34 +79,6 @@ const PopularCategoriesSection = () => {
             </Link>
           ))}
         </div>
-
-        {/* Category Filter Bar */}
-        <div className="bg-gray-50 border-t border-gray-200 mt-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex overflow-x-auto py-3 space-x-6 scrollbar-hide">
-              {[
-                'Graphic Design',
-                'Web Development',
-                'Content Writing',
-                'Digital Marketing',
-                'Video Editing',
-                'Mobile App Development',
-                'Translation Services',
-                'Voice Over',
-                'UI/UX Design',
-                'Photography',
-              ].map((category) => (
-                <Link
-                  key={category}
-                  to={`/search?category=${encodeURIComponent(category)}`}
-                  className="whitespace-nowrap text-sm text-gray-700 hover:text-green-600 font-medium transition-colors flex-shrink-0"
-                >
-                  {category}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

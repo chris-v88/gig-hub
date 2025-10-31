@@ -8,6 +8,11 @@ node_modules/
 # Environment variables
 backend/.env
 frontend/.env
+
+# Authentication cookies (contains sensitive data)
+cookies.txt
+frontend/cookies.txt
+backend/cookies.txt
 .env
 .env.local
 .env.development.local

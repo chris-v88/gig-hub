@@ -10,6 +10,7 @@ import {
 } from '../common/constants/app.constant.js';
 
 export const authService = {
+  // POST /api/auth/signup
   signup: async (req) => {
     const { name, username, email, password, country } = req.body;
     
@@ -90,6 +91,7 @@ export const authService = {
     return newUser;
   },
 
+  // POST /api/auth/login
   login: async (req, res) => {
     const { email, password } = req.body;
     
@@ -173,6 +175,25 @@ export const authService = {
     });
     
     return { message: 'Logged out successfully' };
+  },
+
+  getUserById: async (userId) => {
+    const user = await prisma.users.findUnique({
+      where: { id: parseInt(userId) },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        username: true,
+        role: true,
+        profile_image: true,
+        country: true,
+        description: true,
+        created_at: true,
+      }
+    });
+
+    return user;
   },
 
   remove: async (req) => {

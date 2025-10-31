@@ -75,4 +75,41 @@ export const authController = {
       next(error);
     }
   },
+
+  check: async (req, res, next) => {
+    try {
+      const accessToken = req.cookies?.access_token;
+      
+      if (!accessToken) {
+        return res.status(200).json({
+          isAuthenticated: false,
+        });
+      }
+
+      const decoded = tokenService.verifyAccessToken(accessToken);
+      const user = await authService.getUserById(decoded.userId);
+      
+      if (!user) {
+        return res.status(200).json({
+          isAuthenticated: false,
+        });
+      }
+
+      res.status(200).json({
+        isAuthenticated: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          username: user.username,
+          role: user.role,
+          profile_image: user.profile_image,
+        },
+      });
+    } catch (error) {
+      res.status(200).json({
+        isAuthenticated: false,
+      });
+    }
+  },
 };

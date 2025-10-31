@@ -125,6 +125,48 @@ export const gigAPI = {
     const response = await api.post(`/gigs/${gigId}/reviews`, reviewData);
     return response.data;
   },
+
+  // New enhanced endpoints
+  searchPagination: async (pageIndex = 1, pageSize = 10, keyword = ''): Promise<any> => {
+    const response = await api.get('/gigs/search-pagination', {
+      params: { pageIndex, pageSize, keyword },
+    });
+    return response.data;
+  },
+
+  getCategoriesMenu: async (): Promise<any> => {
+    const response = await api.get('/gigs/categories-menu');
+    return response.data;
+  },
+
+  getCategoryDetails: async (categoryId: number): Promise<any> => {
+    const response = await api.get(`/gigs/category-details/${categoryId}`);
+    return response.data;
+  },
+
+  getBySubcategory: async (subcategoryId: number): Promise<any> => {
+    const response = await api.get(`/gigs/by-subcategory/${subcategoryId}`);
+    return response.data;
+  },
+
+  getGigDetails: async (gigId: number): Promise<any> => {
+    const response = await api.get(`/gigs/details/${gigId}`);
+    return response.data;
+  },
+
+  getByName: async (gigName: string): Promise<any> => {
+    const response = await api.get(`/gigs/by-name/${gigName}`);
+    return response.data;
+  },
+
+  uploadImage: async (gigId: number, formData: FormData): Promise<any> => {
+    const response = await api.post(`/gigs/upload-image/${gigId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
 };
 
 export default api;

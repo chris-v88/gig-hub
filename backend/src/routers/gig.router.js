@@ -13,12 +13,12 @@ gigRouter.get('/search-pagination', gigController.searchPagination);
 gigRouter.get('/categories-menu', gigController.getJobTypeMenu);
 gigRouter.get('/category-details/:categoryId', gigController.getJobTypeDetails);
 gigRouter.get('/by-subcategory/:subcategoryId', gigController.getGigsBySubcategory);
-gigRouter.get('/gig-details/:gigId', gigController.getGigDetails); // Renamed to avoid conflict
+gigRouter.get('/details/:id', gigController.getGigDetails); // Match frontend expectation
 gigRouter.get('/by-name/:gigName', gigController.getGigsByName);
 
 // General routes (must come after specific routes)
 gigRouter.get('/', gigController.findAll);
-gigRouter.get('/:id(\\d+)', gigController.findOne); // Only match numeric IDs
+gigRouter.get('/:id', gigController.findOne); // Safe after specific routes
 
 // Protected routes (require authentication)
 gigRouter.put('/:id', protect, gigController.update);
