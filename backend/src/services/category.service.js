@@ -13,8 +13,7 @@ export const categoryService = {
     return categories;
   },
 
-  // From assignment: POST /api/loai-cong-viec
-  // From this app: POST /api/categories
+  // POST /api/categories
   create: async (req) => {
     const { name } = req.body;
 
@@ -83,8 +82,7 @@ export const categoryService = {
     return category;
   },
 
-  // From assignment: PUT /api/loai-cong-viec/{id}
-  // From this app: PUT /api/categories/:id
+  // PUT /api/categories/:id
   update: async (req) => {
     const { id } = req.params;
     const { name } = req.body;

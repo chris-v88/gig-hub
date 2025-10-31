@@ -21,8 +21,7 @@ export const subcategoryService = {
     return subcategories;
   },
 
-  // From assignment: POST /api/chi-tiet-loai-cong-viec
-  // From this app: POST /api/subcategories
+  // POST /api/subcategories
   create: async (req) => {
     const { name } = req.body;
 
@@ -150,8 +149,7 @@ export const subcategoryService = {
     return { message: 'Subcategory deleted successfully' };
   },
 
-  // From assignment: POST /api/chi-tiet-loai-cong-viec/them-nhom-chi-tiet-loai
-  // From this app: POST /api/subcategories/create-group
+  // POST /api/subcategories/create-group
   createGroup: async (req) => {
     const { name, category_id, subcategory_list } = req.body;
 
@@ -189,8 +187,7 @@ export const subcategoryService = {
     return mainSubcategory;
   },
 
-  // From assignment: PUT /api/chi-tiet-loai-cong-viec/sua-nhom-chi-tiet-loai/{id}
-  // From this app: PUT /api/subcategories/update-group/:id
+  // PUT /api/subcategories/update-group/:id
   updateGroup: async (req) => {
     const { id } = req.params;
     const { name, category_id, subcategory_list } = req.body;
@@ -227,8 +224,7 @@ export const subcategoryService = {
     return updatedSubcategory;
   },
 
-  // From assignment: POST /api/chi-tiet-loai-cong-viec/upload-hinh-nhom-loai-cong-viec/{MaNhomLoaiCongViec}
-  // From this app: POST /api/subcategories/upload-group-image/:group_id
+  // POST /api/subcategories/upload-group-image/:group_id
   uploadGroupImage: async (req) => {
     const { group_id } = req.params;
 

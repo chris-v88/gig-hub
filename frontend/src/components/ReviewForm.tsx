@@ -34,7 +34,9 @@ const ReviewForm = ({ gigId, onSuccess, onCancel }: ReviewFormProps) => {
 
     setLoading(true);
     try {
-      // Get current user ID from localStorage or auth context
+      // TODO: SECURITY ISSUE - Using localStorage for user ID is insecure
+      // Should use auth context or let backend validate from session/token
+      // This is temporary until proper authentication context is implemented
       const userId = localStorage.getItem('userId');
       if (!userId) {
         throw new Error('User not authenticated');

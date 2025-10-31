@@ -404,14 +404,12 @@ export const gigService = {
     }
   },
 
-  // From assignment: GET /api/cong-viec/phan-trang-tim-kiem
-  // From this app: GET /api/gigs/search-pagination
+  // GET /api/gigs/search-pagination
   searchPagination: async (req) => {
     return await gigService.search(req); // Use existing search method
   },
 
-  // From assignment: POST /api/cong-viec/upload-hinh-cong-viec/{MaCongViec}
-  // From this app: POST /api/gigs/upload-image/:gig_id
+  // POST /api/gigs/upload-image/:gig_id
   uploadGigImage: async (req) => {
     const { gig_id } = req.params;
     
@@ -423,8 +421,7 @@ export const gigService = {
     };
   },
 
-  // From assignment: GET /api/cong-viec/lay-menu-loai-cong-viec
-  // From this app: GET /api/gigs/categories-menu
+  // GET /api/gigs/categories-menu
   getJobTypeMenu: async (req) => {
     const categories = await prisma.categories.findMany({
       include: {
@@ -443,17 +440,16 @@ export const gigService = {
     return categories;
   },
 
-  // From assignment: GET /api/cong-viec/lay-chi-tiet-loai-cong-viec/{MaLoaiCongViec}
-  // From this app: GET /api/gigs/category-details/:categoryId
+  // GET /api/gigs/category-details/:categoryId
   getJobTypeDetails: async (req) => {
-    const { MaLoaiCongViec } = req.params;
+    const { categoryId } = req.params;
 
     const category = await prisma.categories.findUnique({
-      where: { id: parseInt(MaLoaiCongViec) },
+      where: { id: parseInt(categoryId) },
       include: {
         Subcategories: {
           include: {
-            gigs: {
+            Gigs: {
               select: {
                 id: true,
                 title: true,
@@ -474,8 +470,7 @@ export const gigService = {
     return category;
   },
 
-  // From assignment: GET /api/cong-viec/lay-cong-viec-theo-chi-tiet-loai/{MaChiTietLoai}
-  // From this app: GET /api/gigs/by-subcategory/:subcategory_id
+  // GET /api/gigs/by-subcategory/:subcategory_id
   getGigsBySubcategory: async (req) => {
     const { subcategory_id } = req.params;
 
@@ -524,14 +519,12 @@ export const gigService = {
     return gigsWithRatings;
   },
 
-  // From assignment: GET /api/cong-viec/lay-cong-viec-chi-tiet/{MaCongViec}
-  // From this app: GET /api/gigs/details/:id
+  // GET /api/gigs/details/:id
   getGigDetails: async (req) => {
     return await gigService.findOne(req); // Use existing findOne method
   },
 
-  // From assignment: GET /api/cong-viec/lay-danh-sach-cong-viec-theo-ten/{TenCongViec}
-  // From this app: GET /api/gigs/by-name/:gig_name
+  // GET /api/gigs/by-name/:gig_name
   getGigsByName: async (req) => {
     const { gig_name } = req.params;
 

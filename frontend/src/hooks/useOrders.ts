@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { orderApi, OrderCreateRequest, OrderUpdateRequest } from '../api/order';
+import { orderApi, OrderUpdateRequest } from '../api/order';
 
 // Query Keys
 export const orderKeys = {

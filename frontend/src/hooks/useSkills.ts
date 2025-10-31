@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { skillApi, SkillCreateRequest, SkillUpdateRequest } from '../api/skill';
+import { skillApi, SkillUpdateRequest } from '../api/skill';
 
 // Query Keys
 export const skillKeys = {

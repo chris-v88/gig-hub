@@ -1,12 +1,6 @@
 import axios from 'axios';
 
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
-
-if (!apiUrl) {
-  throw new Error(
-    'REACT_APP_API_URL environment variable is not set. Please configure it in your .env file.'
-  );
-}
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 export const axiosInstance = axios.create({
   baseURL: apiUrl,

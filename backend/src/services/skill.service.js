@@ -31,8 +31,7 @@ export const skillService = {
     return skills;
   },
 
-  // From assignment: (Not in original assignment)
-  // From this app: POST /api/skills
+  // POST /api/skills
   create: async (req) => {
     const { name, description } = req.body;
 
@@ -145,8 +144,7 @@ export const skillService = {
     return skill;
   },
 
-  // From assignment: (Not in original assignment)
-  // From this app: PUT /api/skills/:id
+  // PUT /api/skills/:id
   update: async (req) => {
     const { id } = req.params;
     const { name, description } = req.body;

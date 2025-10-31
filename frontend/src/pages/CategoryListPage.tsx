@@ -27,11 +27,11 @@ const CategoryListPage = () => {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   // React Query hooks
-  const {
-    data: categoriesResponse,
-    isLoading,
-    error,
-  } = useCategoriesSearch(currentPage, pageSize, searchKeyword);
+  const { data: categoriesResponse, isLoading } = useCategoriesSearch(
+    currentPage,
+    pageSize,
+    searchKeyword
+  );
 
   const createCategoryMutation = useCreateCategory();
   const updateCategoryMutation = useUpdateCategory();

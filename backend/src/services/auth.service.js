@@ -10,8 +10,7 @@ import {
 } from '../common/constants/app.constant.js';
 
 export const authService = {
-  // From assignment: POST /api/auth/signup
-  // From this app: POST /api/auth/signup
+  // POST /api/auth/signup
   signup: async (req) => {
     const { name, username, email, password, country } = req.body;
     
@@ -92,8 +91,7 @@ export const authService = {
     return newUser;
   },
 
-  // From assignment: POST /api/auth/signin
-  // From this app: POST /api/auth/login
+  // POST /api/auth/login
   login: async (req, res) => {
     const { email, password } = req.body;
     
