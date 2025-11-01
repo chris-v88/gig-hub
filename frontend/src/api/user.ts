@@ -6,8 +6,7 @@ export type User = {
   email: string;
   phone?: string;
   birthday?: string;
-  gender?: 'male' | 'female' | 'other';
-  role: 'user' | 'admin';
+  gender?: boolean | null;
   username?: string;
   profile_image?: string;
   description?: string;
@@ -24,8 +23,7 @@ export type UserCreateRequest = {
   password: string;
   phone?: string;
   birthday?: string;
-  gender?: 'male' | 'female' | 'other';
-  role?: 'user' | 'admin';
+  gender?: boolean | null;
   skill?: string[];
   certification?: string[];
 };
@@ -35,8 +33,7 @@ export type UserUpdateRequest = {
   email?: string;
   phone?: string;
   birthday?: string;
-  gender?: 'male' | 'female' | 'other';
-  role?: 'user' | 'admin';
+  gender?: boolean | null;
   skill?: string[];
   certification?: string[];
 };
@@ -53,13 +50,13 @@ export const userApi = {
   // GET /api/users
   getAll: async (): Promise<User[]> => {
     const response = await axiosInstance.get('/users');
-    return response.data.content;
+    return response.data.data;
   },
 
   // POST /api/users
   create: async (data: UserCreateRequest): Promise<User> => {
     const response = await axiosInstance.post('/users', data);
-    return response.data.content;
+    return response.data.data;
   },
 
   // DELETE /api/users (with query param)
@@ -67,7 +64,7 @@ export const userApi = {
     const response = await axiosInstance.delete('/users', {
       params: { id },
     });
-    return response.data.content;
+    return response.data.data;
   },
 
   // GET /api/users/search-pagination
@@ -79,25 +76,25 @@ export const userApi = {
     const response = await axiosInstance.get('/users/search-pagination', {
       params: { pageIndex, pageSize, keyword },
     });
-    return response.data.content;
+    return response.data.data;
   },
 
   // GET /api/users/search/:username
   searchByName: async (username: string): Promise<User[]> => {
     const response = await axiosInstance.get(`/users/search/${username}`);
-    return response.data.content;
+    return response.data.data;
   },
 
   // GET /api/users/:id
   getById: async (id: number): Promise<User> => {
     const response = await axiosInstance.get(`/users/${id}`);
-    return response.data.content;
+    return response.data.data;
   },
 
   // PUT /api/users/:id
   update: async (id: number, data: UserUpdateRequest): Promise<User> => {
     const response = await axiosInstance.put(`/users/${id}`, data);
-    return response.data.content;
+    return response.data.data;
   },
 
   // POST /api/users/upload-avatar
@@ -107,7 +104,7 @@ export const userApi = {
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response.data.content;
+    return response.data.data;
   },
 };
 

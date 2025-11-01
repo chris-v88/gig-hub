@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
 import StarRating from '../ui/StarRating';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
@@ -10,6 +11,11 @@ export type GigSellerInfoProps = {
 
 const GigSellerInfo = (props: GigSellerInfoProps) => {
   const { gig } = props;
+  const navigate = useNavigate();
+
+  const handleViewProfile = () => {
+    navigate(`/profile/${gig.user.id}`);
+  };
 
   return (
     <Card>
@@ -51,7 +57,7 @@ const GigSellerInfo = (props: GigSellerInfoProps) => {
           </div>
         </div>
 
-        <Button variant="outline" className="w-full mt-4">
+        <Button variant="outline" className="w-full mt-4" onClick={handleViewProfile}>
           View Profile
         </Button>
       </CardContent>

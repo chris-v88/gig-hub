@@ -2,7 +2,7 @@ import prisma from '../common/prisma/init.prisma.js';
 import { BadRequestException } from '../common/helpers/exception.helper.js';
 
 export const skillService = {
-  // GET /api/skill
+  // GET /api/skills
   findAll: async (req) => {
     const skills = await prisma.Skills.findMany({
       include: {
@@ -60,7 +60,7 @@ export const skillService = {
     return skill;
   },
 
-  // GET /api/skill/phan-trang-tim-kiem
+  // GET /api/skills/search-pagination
   searchPagination: async (req) => {
     const { pageIndex = 1, pageSize = 10, keyword = '' } = req.query;
     const page = parseInt(pageIndex);
@@ -110,7 +110,7 @@ export const skillService = {
     };
   },
 
-  // GET /api/skill/:id
+  // GET /api/skills/:id
   findOne: async (req) => {
     const { id } = req.params;
 
@@ -191,7 +191,7 @@ export const skillService = {
     return updatedSkill;
   },
 
-  // DELETE /api/skill/:id
+  // DELETE /api/skills/:id
   remove: async (req) => {
     const { id } = req.params;
 

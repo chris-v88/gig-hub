@@ -46,7 +46,7 @@ const SignupPage = () => {
       const result = await signupMutation.mutateAsync(signupData);
 
       if (result.success) {
-        navigate('/dashboard');
+        navigate('/');
       }
     } catch (error: any) {
       // Handle validation errors from backend
