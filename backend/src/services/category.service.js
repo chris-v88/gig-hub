@@ -2,7 +2,7 @@ import prisma from '../common/prisma/init.prisma.js';
 import { BadRequestException } from '../common/helpers/exception.helper.js';
 
 export const categoryService = {
-  // GET /api/loai-cong-viec
+  // GET /api/categories
   findAll: async (req) => {
     const categories = await prisma.categories.findMany({
       orderBy: {
@@ -30,7 +30,7 @@ export const categoryService = {
     return category;
   },
 
-  // GET /api/loai-cong-viec/phan-trang-tim-kiem
+  // GET /api/categories/search-pagination
   searchPagination: async (req) => {
     const { pageIndex = 1, pageSize = 10, keyword = '' } = req.query;
     const page = parseInt(pageIndex);
@@ -64,7 +64,7 @@ export const categoryService = {
     };
   },
 
-  // GET /api/loai-cong-viec/:id
+  // GET /api/categories/:id
   findOne: async (req) => {
     const { id } = req.params;
 
@@ -109,7 +109,7 @@ export const categoryService = {
     return updatedCategory;
   },
 
-  // DELETE /api/loai-cong-viec/:id
+  // DELETE /api/categories/:id
   remove: async (req) => {
     const { id } = req.params;
 

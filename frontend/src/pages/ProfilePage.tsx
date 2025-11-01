@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, Navigate, Link } from 'react-router-dom';
 import { useUserProfile, useUpdateProfile, useUploadAvatar } from '../hooks/useUser';
+import { useUserGigs } from '../hooks/useGig';
 import { useAuthStore } from '../store/authStore';
 import { Card } from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -53,6 +54,9 @@ const ProfilePage: React.FC = () => {
 
   // Fetch profile data
   const { data: profileUser, isLoading, error } = useUserProfile(profileUserId);
+
+  // Fetch user's gigs
+  const { data: userGigs, isLoading: gigsLoading } = useUserGigs(profileUserId);
 
   const updateProfileMutation = useUpdateProfile();
   const uploadAvatarMutation = useUploadAvatar();
@@ -226,12 +230,6 @@ const ProfilePage: React.FC = () => {
                   </div>
                   <div className="text-gray-500">Orders Completed</div>
                 </div>
-                <div className="text-center">
-                  <div className="font-bold text-lg text-green-600">
-                    {profileUser.role === 'admin' ? 'Admin' : 'Member'}
-                  </div>
-                  <div className="text-gray-500">Role</div>
-                </div>
                 {profileUser.is_online && (
                   <div className="text-center">
                     <div className="font-bold text-lg text-green-500">Online</div>
@@ -325,6 +323,79 @@ const ProfilePage: React.FC = () => {
             </div>
           </Card>
         )}
+
+        {/* User's Gigs Section */}
+        <Card className="p-6 mt-8">
+          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+            🎯 {isOwnProfile ? 'My Gigs' : `${profileUser.name}'s Gigs`}
+          </h3>
+
+          {gigsLoading ? (
+            <div className="flex justify-center py-8">
+              <Spinner />
+            </div>
+          ) : userGigs && userGigs.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userGigs.map((gig) => (
+                <Link
+                  key={gig.id}
+                  to={`/gig/${gig.id}`}
+                  className="block border rounded-lg overflow-hidden hover:shadow-md transition-shadow"
+                >
+                  <div className="aspect-video bg-gray-200 overflow-hidden">
+                    {gig.image_url ? (
+                      <img
+                        src={gig.image_url}
+                        alt={gig.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                        <span className="text-gray-400 text-4xl">📋</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">{gig.title}</h4>
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {gig.short_description || gig.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center">
+                          <span className="text-yellow-400">⭐</span>
+                          <span className="text-sm font-medium ml-1">{gig.average_rating}</span>
+                        </div>
+                        <span className="text-sm text-gray-500">({gig.total_reviews})</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-gray-500">Starting at</div>
+                        <div className="font-bold text-green-600">${gig.price}</div>
+                      </div>
+                    </div>
+                    <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                      <span>🚚 {gig.delivery_time} days</span>
+                      <span>•</span>
+                      <span>📦 {gig.orders_completed || 0} orders</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              {isOwnProfile ? (
+                <div>
+                  <p className="text-lg mb-2">You haven&apos;t created any gigs yet</p>
+                  <p className="text-sm">Create your first gig to start earning!</p>
+                  <Button className="mt-4">Create Gig</Button>
+                </div>
+              ) : (
+                <p>This user hasn&apos;t created any gigs yet.</p>
+              )}
+            </div>
+          )}
+        </Card>
 
         {/* Upload Avatar Progress */}
         {uploadAvatarMutation.isPending && (

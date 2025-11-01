@@ -2,7 +2,7 @@ import prisma from '../common/prisma/init.prisma.js';
 import { BadRequestException } from '../common/helpers/exception.helper.js';
 
 export const subcategoryService = {
-  // GET /api/chi-tiet-loai-cong-viec
+  // GET /api/subcategories
   findAll: async (req) => {
     const subcategories = await prisma.Subcategories.findMany({
       include: {
@@ -38,7 +38,7 @@ export const subcategoryService = {
     return subcategory;
   },
 
-  // GET /api/chi-tiet-loai-cong-viec/phan-trang-tim-kiem
+  // GET /api/subcategories/search-pagination
   searchPagination: async (req) => {
     const { pageIndex = 1, pageSize = 10, keyword = '' } = req.query;
     const page = parseInt(pageIndex);
@@ -80,7 +80,7 @@ export const subcategoryService = {
     };
   },
 
-  // GET /api/chi-tiet-loai-cong-viec/:id
+  // GET /api/subcategories/:id
   findOne: async (req) => {
     const { id } = req.params;
 
@@ -103,7 +103,7 @@ export const subcategoryService = {
     return subcategory;
   },
 
-  // PUT /api/chi-tiet-loai-cong-viec/:id
+  // PUT /api/subcategories/:id
   update: async (req) => {
     const { id } = req.params;
     const { name } = req.body;
@@ -130,7 +130,7 @@ export const subcategoryService = {
     return updatedSubcategory;
   },
 
-  // DELETE /api/chi-tiet-loai-cong-viec/:id
+  // DELETE /api/subcategories/:id
   remove: async (req) => {
     const { id } = req.params;
 
@@ -224,15 +224,15 @@ export const subcategoryService = {
     return updatedSubcategory;
   },
 
-  // POST /api/subcategories/upload-group-image/:group_id
+  // POST /api/subcategories/upload-group-image/:groupId
   uploadGroupImage: async (req) => {
-    const { group_id } = req.params;
+    const { groupId } = req.params;
 
     // This would need Cloudinary integration
     // For now, return a placeholder response
     return {
       message: 'Image upload functionality needs Cloudinary integration',
-      groupId: group_id,
+      groupId: groupId,
     };
   },
 };

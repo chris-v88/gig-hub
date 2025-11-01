@@ -24,7 +24,7 @@ const LoginPage = () => {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await loginMutation.mutateAsync(data);
-      navigate('/dashboard');
+      navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
     }

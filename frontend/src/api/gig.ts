@@ -118,6 +118,13 @@ export const gigAPI = {
     return response.data;
   },
 
+  getByUser: async (
+    userId: string | number
+  ): Promise<{ status: string; statusCode: number; message: string; data: Gig[] }> => {
+    const response = await api.get(`/gigs/by-user/${userId}`);
+    return response.data;
+  },
+
   createReview: async (
     gigId: string | number,
     reviewData: CreateReviewData

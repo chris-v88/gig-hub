@@ -139,6 +139,7 @@ export const authService = {
     };
   },
 
+  // GET /api/auth/check
   authCheck: async (req, res) => {
     const accessToken = req.cookies.access_token;
     const refreshToken = req.cookies.refresh_token;
@@ -161,6 +162,7 @@ export const authService = {
     }
   },
 
+  // POST /api/auth/logout
   logout: async (req, res) => {
     // Clear cookies
     res.clearCookie('access_token', {
@@ -185,7 +187,6 @@ export const authService = {
         name: true,
         email: true,
         username: true,
-        role: true,
         profile_image: true,
         country: true,
         description: true,

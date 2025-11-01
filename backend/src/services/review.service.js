@@ -3,7 +3,7 @@ import { BadRequestException } from '../common/helpers/exception.helper.js';
 import { updateGigRating } from '../common/helpers/gig.helper.js';
 
 export const reviewService = {
-  // GET /api/binh-luan
+  // GET /api/reviews
   findAll: async (req) => {
     const reviews = await prisma.reviews.findMany({
       include: {
@@ -124,7 +124,7 @@ export const reviewService = {
     return review;
   },
 
-  // PUT /api/binh-luan/:id
+  // PUT /api/reviews/:id
   update: async (req) => {
     const { id } = req.params;
     const { content, rating } = req.body;
@@ -161,7 +161,7 @@ export const reviewService = {
     return updatedReview;
   },
 
-  // DELETE /api/binh-luan/:id
+  // DELETE /api/reviews/:id
   remove: async (req) => {
     const { id } = req.params;
 
@@ -183,13 +183,13 @@ export const reviewService = {
     return { message: 'Review deleted successfully' };
   },
 
-  // GET /api/reviews/by-gig/:gig_id
+  // GET /api/reviews/by-gig/:gigId
   getByGig: async (req) => {
-    const { gig_id } = req.params;
+    const { gigId } = req.params;
 
     const reviews = await prisma.reviews.findMany({
       where: {
-        gig_id: parseInt(gig_id),
+        gig_id: parseInt(gigId),
         is_public: true,
       },
       include: {

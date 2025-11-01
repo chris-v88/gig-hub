@@ -2,10 +2,12 @@ import prisma from '../common/prisma/init.prisma.js';
 import { BadRequestException, UnauthorizedException } from '../common/helpers/exception.helper.js';
 
 export const gigService = {
+  // POST /api/gigs
   create: async (req) => {
     return 'This action creates a gig';
   },
 
+  // GET /api/gigs
   findAll: async (req) => {
     const gigs = await prisma.gigs.findMany({
       take: 20,
@@ -52,6 +54,7 @@ export const gigService = {
     };
   },
 
+  // GET /api/gigs/:id
   findOne: async (req) => {
     const { id } = req.params;
     
@@ -134,14 +137,17 @@ export const gigService = {
     };
   },
 
+  // PUT /api/gigs/:id
   update: async (req) => {
-    return `This action updates gig #${req.params.id}`;
+    return `This action updates a id: ${req.params.id} gig`;
   },
 
+  // DELETE /api/gigs/:id
   remove: async (req) => {
-    return `This action removes gig #${req.params.id}`;
+    return `This action removes a id: ${req.params.id} gig`;
   },
 
+  // POST /api/gigs/:id/reviews
   createReview: async (req) => {
     const { id } = req.params;
     const { 
@@ -275,6 +281,7 @@ export const gigService = {
     };
   },
 
+  // GET /api/gigs/search
   search: async (req) => {
     const { query, category, sortBy = 'relevance', page = 1, limit = 20 } = req.query;
     
@@ -409,15 +416,15 @@ export const gigService = {
     return await gigService.search(req); // Use existing search method
   },
 
-  // POST /api/gigs/upload-image/:gig_id
+  // POST /api/gigs/upload-image/:gigId
   uploadGigImage: async (req) => {
-    const { gig_id } = req.params;
+    const { gigId } = req.params;
     
     // This would need Cloudinary integration
     // For now, return a placeholder response
     return {
       message: 'Image upload functionality needs Cloudinary integration',
-      gigId: gig_id,
+      gigId: gigId,
     };
   },
 
@@ -470,13 +477,13 @@ export const gigService = {
     return category;
   },
 
-  // GET /api/gigs/by-subcategory/:subcategory_id
+  // GET /api/gigs/by-subcategory/:subcategoryId
   getGigsBySubcategory: async (req) => {
-    const { subcategory_id } = req.params;
+    const { subcategoryId } = req.params;
 
     const gigs = await prisma.gigs.findMany({
       where: {
-        subcategory_id: parseInt(subcategory_id),
+        subcategory_id: parseInt(subcategoryId),
         status: 'active',
       },
       include: {
@@ -524,14 +531,14 @@ export const gigService = {
     return await gigService.findOne(req); // Use existing findOne method
   },
 
-  // GET /api/gigs/by-name/:gig_name
+  // GET /api/gigs/by-name/:gigName
   getGigsByName: async (req) => {
-    const { gig_name } = req.params;
+    const { gigName } = req.params;
 
     const gigs = await prisma.gigs.findMany({
       where: {
         title: {
-          contains: gig_name,
+          contains: gigName,
         },
         status: 'active',
       },
@@ -563,6 +570,59 @@ export const gigService = {
         user: Users,
         average_rating: parseFloat(gig.average_rating || '0.0'),
         total_reviews: gig.total_reviews || 0,
+      };
+    });
+
+    return gigsWithRatings;
+  },
+
+  // GET /api/gigs/by-user/:userId
+  getGigsByUser: async (req) => {
+    const { userId } = req.params;
+
+    const gigs = await prisma.gigs.findMany({
+      where: {
+        seller_id: parseInt(userId),
+      },
+      include: {
+        Users: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile_image: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        Subcategories: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            Reviews: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    const gigsWithRatings = gigs.map(gig => {
+      const { Users, _count, ...gigData } = gig;
+      return {
+        ...gigData,
+        user: Users,
+        average_rating: parseFloat(gig.average_rating || '0.0'),
+        total_reviews: _count.Reviews || gig.total_reviews || 0,
       };
     });
 

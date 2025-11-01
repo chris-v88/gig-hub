@@ -150,4 +150,15 @@ export const gigController = {
       next(error);
     }
   },
+
+  // GET /api/gigs/by-user/:userId
+  getGigsByUser: async (req, res, next) => {
+    try {
+      const result = await gigService.getGigsByUser(req);
+      const response = responseSuccess(result, `Get gigs by user #${req.params.userId} successfully`, statusCodes.OK);
+      res.status(response.statusCode).json(response);
+    } catch (error) {
+      next(error);
+    }
+  },
 };

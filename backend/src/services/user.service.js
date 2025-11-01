@@ -13,7 +13,6 @@ export const userService = {
         phone: true,
         birthday: true,
         gender: true,
-        role: true,
         username: true,
         profile_image: true,
         description: true,
@@ -32,7 +31,7 @@ export const userService = {
 
   // POST /api/users
   create: async (req) => {
-    const { name, email, password, phone, birthday, gender, role, skill, certification } = req.body;
+    const { name, email, password, phone, birthday, gender, skill, certification } = req.body;
 
     if (!name || !email || !password) {
       throw new BadRequestException('Name, email, and password are required');
@@ -59,7 +58,6 @@ export const userService = {
         phone: phone || null,
         birthday: birthday ? new Date(birthday) : null,
         gender: gender || null,
-        role: role || 'user',
       },
       select: {
         id: true,
@@ -68,7 +66,6 @@ export const userService = {
         phone: true,
         birthday: true,
         gender: true,
-        role: true,
         username: true,
         profile_image: true,
         created_at: true,
@@ -129,7 +126,7 @@ export const userService = {
     return { message: 'User deleted successfully' };
   },
 
-  // GET /api/users/phan-trang-tim-kiem
+  // GET /api/users/search-pagination
   searchPagination: async (req) => {
     const { pageIndex = 1, pageSize = 10, keyword = '' } = req.query;
     const page = parseInt(pageIndex);
@@ -168,7 +165,6 @@ export const userService = {
           phone: true,
           birthday: true,
           gender: true,
-          role: true,
           username: true,
           profile_image: true,
           description: true,
@@ -206,7 +202,6 @@ export const userService = {
         phone: true,
         birthday: true,
         gender: true,
-        role: true,
         username: true,
         profile_image: true,
         description: true,
@@ -241,7 +236,7 @@ export const userService = {
   // PUT /api/users/:id
   update: async (req) => {
     const { id } = req.params;
-    const { name, email, phone, birthday, gender, role, skill, certification } = req.body;
+    const { name, email, phone, birthday, gender, skill, certification } = req.body;
 
     const user = await prisma.users.findUnique({
       where: { id: parseInt(id) },
@@ -271,7 +266,6 @@ export const userService = {
         phone: phone !== undefined ? phone : user.phone,
         birthday: birthday ? new Date(birthday) : user.birthday,
         gender: gender !== undefined ? gender : user.gender,
-        role: role || user.role,
       },
       select: {
         id: true,
@@ -280,7 +274,6 @@ export const userService = {
         phone: true,
         birthday: true,
         gender: true,
-        role: true,
         username: true,
         profile_image: true,
         created_at: true,
@@ -330,14 +323,14 @@ export const userService = {
     return updatedUser;
   },
 
-  // GET /api/users/search/:TenNguoiDung
+  // GET /api/users/search/:username
   searchByName: async (req) => {
-    const { TenNguoiDung } = req.params;
+    const { username } = req.params;
 
     const users = await prisma.users.findMany({
       where: {
         name: {
-          contains: TenNguoiDung,
+          contains: username,
         },
       },
       select: {

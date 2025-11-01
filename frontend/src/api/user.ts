@@ -6,8 +6,7 @@ export type User = {
   email: string;
   phone?: string;
   birthday?: string;
-  gender?: boolean; // Backend returns boolean: true=male, false=female, null=other
-  role: 'user' | 'admin' | 'seller';
+  gender?: boolean | null;
   username?: string;
   profile_image?: string;
   description?: string;
@@ -16,10 +15,6 @@ export type User = {
   total_orders_completed?: number;
   created_at: string;
   updated_at?: string;
-  skills?: Array<{ skill: string }>;
-  User_certifications?: Array<{ certification: string }>;
-  skill?: string[];
-  certification?: string[];
 };
 
 export type UserCreateRequest = {
@@ -28,8 +23,7 @@ export type UserCreateRequest = {
   password: string;
   phone?: string;
   birthday?: string;
-  gender?: 'male' | 'female' | 'other';
-  role?: 'user' | 'admin';
+  gender?: boolean | null;
   skill?: string[];
   certification?: string[];
 };
@@ -40,7 +34,6 @@ export type UserUpdateRequest = {
   phone?: string;
   birthday?: string;
   gender?: boolean | null;
-  role?: 'user' | 'admin' | 'seller';
   skill?: string[];
   certification?: string[];
 };

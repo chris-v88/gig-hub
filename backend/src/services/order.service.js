@@ -2,7 +2,7 @@ import prisma from '../common/prisma/init.prisma.js';
 import { BadRequestException, UnauthorizedException } from '../common/helpers/exception.helper.js';
 
 export const orderService = {
-  // GET /api/thue-cong-viec
+  // GET /api/orders
   findAll: async (req) => {
     const orders = await prisma.orders.findMany({
       include: {
@@ -39,7 +39,7 @@ export const orderService = {
     return orders;
   },
 
-  // POST /api/thue-cong-viec
+  // POST /api/orders
   create: async (req) => {
     const { gig_id, buyer_id, hire_date, completed } = req.body;
 
@@ -113,7 +113,7 @@ export const orderService = {
     return order;
   },
 
-  // GET /api/thue-cong-viec/phan-trang-tim-kiem
+  // GET /api/orders/search-pagination
   searchPagination: async (req) => {
     const { pageIndex = 1, pageSize = 10, keyword = '' } = req.query;
     const page = parseInt(pageIndex);
@@ -182,7 +182,7 @@ export const orderService = {
     };
   },
 
-  // GET /api/thue-cong-viec/:id
+  // GET /api/orders/:id
   findOne: async (req) => {
     const { id } = req.params;
 
@@ -236,7 +236,7 @@ export const orderService = {
     return order;
   },
 
-  // PUT /api/thue-cong-viec/:id
+  // PUT /api/orders/:id
   update: async (req) => {
     const { id } = req.params;
     const { hire_date, completed, status } = req.body;
@@ -308,7 +308,7 @@ export const orderService = {
     return updatedOrder;
   },
 
-  // DELETE /api/thue-cong-viec/:id
+  // DELETE /api/orders/:id
   remove: async (req) => {
     const { id } = req.params;
 
@@ -327,7 +327,7 @@ export const orderService = {
     return { message: 'Order deleted successfully' };
   },
 
-  // GET /api/thue-cong-viec/lay-danh-sach-da-thue
+  // GET /api/orders/user-orders
   getUserOrders: async (req) => {
     const userId = req.user?.id;
 
@@ -365,7 +365,7 @@ export const orderService = {
     return orders;
   },
 
-  // POST /api/thue-cong-viec/hoan-thanh-cong-viec/:MaThueCongViec
+  // POST /api/orders/complete-order/:orderId
   completeOrder: async (req) => {
     const { MaThueCongViec } = req.params;
 

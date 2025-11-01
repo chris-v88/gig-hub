@@ -102,7 +102,6 @@ export const authController = {
           name: user.name,
           email: user.email,
           username: user.username,
-          role: user.role,
           profile_image: user.profile_image,
         },
       });

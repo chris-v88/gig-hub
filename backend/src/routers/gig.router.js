@@ -13,6 +13,7 @@ gigRouter.get('/search-pagination', gigController.searchPagination);
 gigRouter.get('/categories-menu', gigController.getJobTypeMenu);
 gigRouter.get('/category-details/:categoryId', gigController.getJobTypeDetails);
 gigRouter.get('/by-subcategory/:subcategoryId', gigController.getGigsBySubcategory);
+gigRouter.get('/by-user/:userId', gigController.getGigsByUser);
 gigRouter.get('/details/:id', gigController.getGigDetails); // Match frontend expectation
 gigRouter.get('/by-name/:gigName', gigController.getGigsByName);
 
