@@ -82,7 +82,7 @@ export const userService = {
           prisma.user_skills.create({
             data: {
               user_id: user.id,
-              skill_name: skillName,
+              skill: skillName,
             },
           })
         )
@@ -96,7 +96,7 @@ export const userService = {
           prisma.user_certifications.create({
             data: {
               user_id: user.id,
-              certification_name: certName,
+              certification: certName,
             },
           })
         )
@@ -216,12 +216,12 @@ export const userService = {
         created_at: true,
         skills: {
           select: {
-            skill_name: true,
+            skill: true,
           },
         },
         User_certifications: {
           select: {
-            certification_name: true,
+            certification: true,
           },
         },
       },
@@ -233,8 +233,8 @@ export const userService = {
 
     return {
       ...user,
-      skill: user.skills.map(s => s.skill_name),
-      certification: user.User_certifications.map(c => c.certification_name),
+      skill: user.skills.map(s => s.skill),
+      certification: user.User_certifications.map(c => c.certification),
     };
   },
 
@@ -300,7 +300,7 @@ export const userService = {
           prisma.user_skills.create({
             data: {
               user_id: parseInt(id),
-              skill_name: skillName,
+              skill: skillName,
             },
           })
         )
@@ -320,7 +320,7 @@ export const userService = {
           prisma.user_certifications.create({
             data: {
               user_id: parseInt(id),
-              certification_name: certName,
+              certification: certName,
             },
           })
         )

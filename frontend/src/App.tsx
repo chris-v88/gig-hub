@@ -11,6 +11,7 @@ import CategoryListPage from './pages/CategoryListPage';
 import OrderListPage from './pages/OrderListPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import SkillsListPage from './pages/SkillsListPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -35,10 +36,11 @@ function App() {
 
             {/* User Routes */}
             <Route path="/my-orders" element={<MyOrdersPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/:userId" element={<ProfilePage />} />
 
             {/* TODO: Add more routes */}
             {/* 
-            <Route path="/profile" element={<ProfilePage />} />
             <Route path="/categories/:category" element={<CategoryPage />} />
             <Route path="/admin/users" element={<UserListPage />} />
             <Route path="/admin/subcategories" element={<SubcategoryListPage />} />
